@@ -18,8 +18,8 @@ A secure, cloud-deployed web application for sharing and discussing SoundCloud t
 
 ## Team Members
 
-> Sibi - Infra Lead
-> Anthony - Security & Docs
-> Shyan -
-> Alyaan -
-> Dhuha -
+- Sibi - Infra Lead
+- Anthony - Security & Docs
+- Shyan -
+- Alyaan -
+- Dhuha -
