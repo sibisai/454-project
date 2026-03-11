@@ -5,15 +5,15 @@ services:
     image: postgres:15
     restart: unless-stopped
     environment:
-      POSTGRES_DB: app_db
-      POSTGRES_USER: app_user
-      POSTGRES_PASSWORD: app_password
+      POSTGRES_DB: soundcloud_discuss
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpass
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U app_user -d app_db"]
+      test: ["CMD-SHELL", "pg_isready -U devuser -d soundcloud_discuss"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -26,29 +26,24 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app
+      - ./backend/app:/app/app
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: app_db
-      DB_USER: app_user
-      DB_PASSWORD: app_password
+      DATABASE_URL: postgresql://devuser:devpass@db:5432/soundcloud_discuss
       JWT_SECRET: dev-secret-change-in-production
-      DATABASE_URL: postgresql://app_user:app_password@db:5432/app_db
     depends_on:
       db:
         condition: service_healthy
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
-    image: node:20-alpine
-    working_dir: /app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/app
-      - frontend_node_modules:/app/node_modules
+      - ./frontend/src:/app/src
     environment:
       VITE_API_URL: http://localhost:8000
     depends_on:
@@ -56,4 +51,3 @@ services:
 
 volumes:
   postgres_data:
-  frontend_node_modules:

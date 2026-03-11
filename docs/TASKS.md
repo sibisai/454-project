@@ -6,9 +6,9 @@
 | Role                            | Name    |
 | ------------------------------- | ------- |
 | Infra Lead (Member 1)           | Sibi    |
-| Backend: Auth & RBAC (Member 2) | _TBD_   |
-| Backend: API & Data (Member 3)  | _TBD_   |
-| Frontend (Member 4)             | _TBD_   |
+| Backend: Auth & RBAC (Member 2) | Shyan   |
+| Backend: API & Data (Member 3)  | Alyaan  |
+| Frontend (Member 4)             | Dhuha   |
 | Security & Docs (Member 5)      | Anthony |
 
 ---
@@ -18,7 +18,7 @@
 ### Infra Lead
 
 - [x] Create repo with folder structure (see below)
-- [ ] Write `docker-compose.yml` (FastAPI + PostgreSQL + React)
+- [x] Write `docker-compose.yml` (FastAPI + PostgreSQL + React)
 - [ ] Terraform: VPC with 2 AZs, public + private subnets
 - [ ] Terraform: Security Groups (ALB, backend, RDS)
 - [ ] Terraform: RDS PostgreSQL (private subnet, encrypted)

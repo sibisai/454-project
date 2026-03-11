@@ -1,9 +1,3 @@
-# Dockerfile — Backend FastAPI application
-#
-# Base image: Python 3.11 slim
-# Installs requirements, copies application code,
-# and runs the FastAPI app with uvicorn on port 8000.
-
 FROM python:3.11-slim
 
 WORKDIR /app
