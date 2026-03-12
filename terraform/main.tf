@@ -1,6 +1,22 @@
-# main.tf — AWS provider configuration and Terraform backend
-#
-# This file configures:
-#   - AWS provider with region variable
-#   - Terraform S3 backend for remote state storage
-#   - Required provider versions
+# main.tf — Terraform configuration and AWS provider setup
+
+terraform {
+  required_version = ">= 1.5"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_availability_zones" "available" {
+  state = "available"
+}
