@@ -28,6 +28,7 @@ frontend/dist/
 *.tfstate
 *.tfstate.backup
 *.tfplan
+*.tfvars
 .terraform.lock.hcl
 crash.log
 

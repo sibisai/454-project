@@ -1,0 +1,9 @@
+# terraform.tfvars.example — Copy to terraform.tfvars and fill in real values
+# NEVER commit terraform.tfvars to version control
+
+aws_region   = "us-east-1"
+project_name = "soundcloud-discuss"
+environment  = "dev"
+
+db_username = "your_db_admin_user"
+db_password = "your_strong_password_here"
