@@ -44,3 +44,18 @@ output "rds_security_group_id" {
   description = "Security group ID for the RDS instance"
   value       = aws_security_group.rds.id
 }
+
+# ──────────────────────────────────────────────
+# Database
+# ──────────────────────────────────────────────
+
+output "rds_endpoint" {
+  description = "Connection endpoint for the RDS PostgreSQL instance"
+  value       = aws_db_instance.main.endpoint
+  sensitive   = true
+}
+
+output "rds_port" {
+  description = "Port number for the RDS PostgreSQL instance"
+  value       = aws_db_instance.main.port
+}
