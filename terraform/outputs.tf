@@ -1,11 +1,4 @@
 # outputs.tf — Output values
-#
-# Outputs will be added here as resources are created:
-#   - VPC ID and subnet IDs
-#   - ALB DNS name (backend API)
-#   - CloudFront distribution URL (frontend)
-#   - RDS endpoint and port
-#   - S3 bucket name
 
 # ──────────────────────────────────────────────
 # Networking
@@ -58,4 +51,13 @@ output "rds_endpoint" {
 output "rds_port" {
   description = "Port number for the RDS PostgreSQL instance"
   value       = aws_db_instance.main.port
+}
+
+# ──────────────────────────────────────────────
+# Container Registry
+# ──────────────────────────────────────────────
+
+output "ecr_repository_url" {
+  description = "URL of the ECR repository for backend images"
+  value       = aws_ecr_repository.backend.repository_url
 }
