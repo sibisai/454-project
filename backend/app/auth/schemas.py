@@ -37,3 +37,14 @@ class UserResponse(BaseModel):
     display_name: str
     global_role: str
     created_at: datetime
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    user: UserResponse
