@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth.routes import router as auth_router
+from app.routes.tracks import router as tracks_router
 
 app = FastAPI(title="SoundCloud Discussion Board API")
 
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(tracks_router)
 
 
 @app.get("/api/health")

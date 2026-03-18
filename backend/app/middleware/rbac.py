@@ -50,3 +50,21 @@ def require_role(*roles: str):
         return user
 
     return _role_dependency
+
+
+def get_optional_user(
+    authorization: str = Header(None), db: Session = Depends(get_db)
+) -> User | None:
+    if authorization is None or not authorization.startswith("Bearer "):
+        return None
+    token = authorization.removeprefix("Bearer ")
+    payload = decode_token(token)
+    if payload.get("type") != "access":
+        return None
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user or user.is_banned:
+        return None
+    return user
