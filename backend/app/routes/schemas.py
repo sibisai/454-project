@@ -3,14 +3,21 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TrackCreateRequest(BaseModel):
     soundcloud_url: str
+
+
+class PostCreateRequest(BaseModel):
+    content: str = Field(min_length=1, max_length=5000)
+
+
+class PostUpdateRequest(BaseModel):
+    content: str = Field(min_length=1, max_length=5000)
 
 
 class TrackResponse(BaseModel):
@@ -20,7 +27,7 @@ class TrackResponse(BaseModel):
     soundcloud_url: str
     title: str
     artist_name: str
-    artwork_url: Optional[str]
+    artwork_url: str | None
     embed_html: str
     posted_by: UUID
     poster_display_name: str
@@ -35,29 +42,17 @@ class PostResponse(BaseModel):
     track_id: UUID
     author_id: UUID
     author_display_name: str
-    parent_id: Optional[UUID]
+    parent_id: UUID | None
     content: str
     is_pinned: bool
     is_removed: bool
     created_at: datetime
-    updated_at: Optional[datetime]
+    updated_at: datetime | None
     replies: list[PostResponse] = []
 
 
-class TrackDetailResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    soundcloud_url: str
-    title: str
-    artist_name: str
-    artwork_url: Optional[str]
-    embed_html: str
-    posted_by: UUID
-    poster_display_name: str
-    post_count: int
-    created_at: datetime
-    user_role: Optional[str]
+class TrackDetailResponse(TrackResponse):
+    user_role: str | None
     posts: list[PostResponse]
 
 
