@@ -41,6 +41,10 @@ All project docs are in the `docs/` folder:
 
 To stop: `docker compose down`
 
+## AWS Infrastructure
+
+All AWS resources are defined in Terraform under the `terraform/` directory. See `docs/` for architecture details.
+
 ## Team
 
 | Name    | Role                 | Branch                  |
