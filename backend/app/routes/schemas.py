@@ -61,3 +61,24 @@ class PaginatedTracksResponse(BaseModel):
     total: int
     page: int
     per_page: int
+
+
+class ModeratorResponse(BaseModel):
+    user_id: UUID
+    display_name: str
+
+
+class ModeratorDetailResponse(ModeratorResponse):
+    email: str
+    delegated_by: UUID
+    delegated_by_display_name: str
+    created_at: datetime
+
+
+class ModeratorListResponse(BaseModel):
+    moderators: list[ModeratorDetailResponse | ModeratorResponse]
+    track_id: UUID
+
+
+class MessageResponse(BaseModel):
+    message: str
