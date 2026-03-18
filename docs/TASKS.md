@@ -1,40 +1,43 @@
 # Task List — SoundCloud Track Discussion Board
 
-> **Timeline:** Mar 9 – May 10, 2026 (9 weeks)
-> **Team:** 5 members — assign names below
+> **Presentation:** April 16–17, 2026
+> **Timeline:** Mar 9 – Apr 16 (~5.5 weeks)
+> **Team:** 5 members
 
-| Role                            | Name    |
-| ------------------------------- | ------- |
-| Infra Lead (Member 1)           | Sibi    |
-| Backend: Auth & RBAC (Member 2) | Shyan   |
-| Backend: API & Data (Member 3)  | Alyaan  |
-| Frontend (Member 4)             | Dhuha   |
-| Security & Docs (Member 5)      | Anthony |
+| Role                 | Name    |
+| -------------------- | ------- |
+| Infra Lead           | Sibi    |
+| Backend: Auth & RBAC | Shyan   |
+| Backend: API & Data  | Alyaan  |
+| Frontend             | Dhuha   |
+| Security & Docs      | Anthony |
 
 ---
 
 ## Phase 1: Foundation — Mar 9–22
 
-### Infra Lead
+### Infra Lead (Sibi)
 
-- [x] Create repo with folder structure (see below)
+- [x] Create repo with folder structure
 - [x] Write `docker-compose.yml` (FastAPI + PostgreSQL + React)
-- [ ] Terraform: VPC with 2 AZs, public + private subnets
-- [ ] Terraform: Security Groups (ALB, backend, RDS)
-- [ ] Terraform: RDS PostgreSQL (private subnet, encrypted)
-- [ ] Terraform: ECR repository for backend Docker image
+- [x] Terraform: VPC with 2 AZs, public + private subnets
+- [x] Terraform: Security Groups (ALB, backend, RDS)
+- [x] Terraform: RDS PostgreSQL (private subnet, encrypted)
+- [x] Terraform: ECR repository for backend Docker image
+- [x] Terraform: CloudTrail + CloudWatch log groups
+- [x] Terraform: cleanup and validation
 - [ ] Verify: VPC visible in AWS console, RDS accessible from private subnet only
 
-### Backend: Auth & RBAC
+### Backend: Auth & RBAC (Shyan)
 
-- [ ] FastAPI project scaffold (`backend/app/main.py`)
 - [ ] User model (SQLAlchemy)
 - [ ] `POST /api/auth/register` — validate input, hash with bcrypt, store user
 - [ ] `POST /api/auth/login` — verify credentials, return JWT
 - [ ] JWT middleware — decode token, attach user to request
+- [ ] `GET /api/auth/me` — return current user from token
 - [ ] Verify: can register, login, and hit a protected test endpoint
 
-### Backend: API & Data
+### Backend: API & Data (Alyaan)
 
 - [ ] Full DB schema in SQLAlchemy models (users, tracks, posts, track_moderators, audit_log)
 - [ ] Alembic setup + initial migration
@@ -42,27 +45,24 @@
 - [ ] URL validation (must be a valid soundcloud.com URL)
 - [ ] Verify: schema deployed to local PostgreSQL, oEmbed returns track data
 
-### Frontend
+### Frontend (Dhuha)
 
-- [ ] React + Vite scaffold (`frontend/`)
 - [ ] Routing setup (React Router): home, login, register, track detail
 - [ ] Login page — form, call `/api/auth/login`, store JWT
 - [ ] Register page — form, call `/api/auth/register`
 - [ ] Basic layout: nav bar with login/logout state
 - [ ] Verify: can log in and see authenticated state in UI
 
-### Security & Docs
+### Security & Docs (Anthony)
 
-- [ ] Terraform: CloudTrail (log to S3 + CloudWatch)
-- [ ] Terraform: CloudWatch log groups
 - [ ] Start design document: Sections 1–3 (Background, System Requirements, Security Requirements)
-- [ ] Verify: CloudTrail logging visible in AWS console
+- [ ] Start compliance checklist draft
 
 ---
 
-## Phase 2: Core Features — Mar 23–Apr 5
+## Phase 2: Core Features — Mar 23–30
 
-### Infra Lead
+### Infra (Sibi)
 
 - [ ] Terraform: ECS Fargate cluster + task definition
 - [ ] Terraform: ALB (HTTPS listener, TLS cert via ACM)
@@ -75,7 +75,7 @@
 ### Backend: Auth & RBAC
 
 - [ ] Role-based permission middleware (checks global_role + track-specific roles)
-- [ ] Permission decorator/dependency: `require_role("admin")`, `require_track_role(track_id, "moderator")`
+- [ ] Permission dependency: `require_role("admin")`, `require_track_role(track_id, "moderator")`
 - [ ] `GET /api/admin/users` — list users (admin only)
 - [ ] `PUT /api/admin/users/:id/role` — change global role (admin only)
 - [ ] Verify: non-admin gets 403 on admin endpoints
@@ -100,28 +100,27 @@
 - [ ] Edit/delete buttons on own posts
 - [ ] Verify: full track → discussion flow working end-to-end in browser
 
-### Security & Docs
+### Security & Docs (Anthony)
 
-- [ ] Terraform: WAF rules on CloudFront (rate limiting, SQLi, XSS)
-- [ ] Terraform: WAF rules on ALB
 - [ ] Continue design document: Section 4 (Architecture Diagram)
-- [ ] Start compliance checklist draft (Section 6)
-- [ ] Verify: WAF active, SQL injection request blocked
+- [ ] Continue compliance checklist (Section 6)
 
 ---
 
-## Phase 3: RBAC + Security Hardening — Apr 6–19
+## Phase 3: RBAC + Security Hardening — Mar 31–Apr 6
 
-### Infra Lead
+### Infra (Sibi)
 
 - [ ] Terraform: Secrets Manager (DB credentials + JWT secret)
 - [ ] Update ECS task definition to pull secrets from Secrets Manager
 - [ ] Terraform: IAM task role for ECS (least privilege: RDS + Secrets Manager only)
 - [ ] Terraform: GuardDuty enabled
+- [ ] Terraform: WAF rules on CloudFront + ALB (rate limiting, SQLi, XSS)
+- [ ] Terraform: Lambda functions + execution roles (least privilege)
 - [ ] Review all IAM policies — remove any wildcard (`*`) actions
 - [ ] Verify: no hardcoded secrets, IAM policies scoped per service
 
-### Backend: Auth & RBAC
+### Backend: RBAC
 
 - [ ] Auto-assign Artist role when user posts a track
 - [ ] `POST /api/tracks/:id/moderators/:userId` — artist delegates moderator
@@ -130,7 +129,7 @@
 - [ ] `POST /api/auth/refresh` — refresh token endpoint
 - [ ] Verify: artist can delegate mod, mod power scoped to that track only
 
-### Backend: API & Data
+### Backend: Moderation + Admin
 
 - [ ] `DELETE /api/mod/posts/:id` — moderator/admin removes post (soft delete)
 - [ ] `POST /api/admin/users/:id/ban` — ban user (admin only)
@@ -142,105 +141,91 @@
 - [ ] Rate limiting on `/api/auth/login` (5/min per IP)
 - [ ] Verify: all mod actions logged, rate limiting active
 
-### Frontend
+### Frontend: Role-Based UI
 
-- [ ] Artist dashboard on track detail page: pin button, "manage moderators" panel
+- [ ] Artist tools on track detail: pin button, "manage moderators" panel
 - [ ] Moderator tools: "remove post" button visible only on assigned tracks
-- [ ] Admin panel page: user list, role change dropdown, ban/unban buttons
+- [ ] Admin panel: user list, role change dropdown, ban/unban buttons
 - [ ] Admin audit log viewer with action type and date filters
 - [ ] Conditional UI: only show tools the user's role allows
 - [ ] Verify: each role sees only their permitted actions
 
-### Security & Docs
+### Security & Docs (Anthony)
 
-- [ ] Lambda: audit log processor (triggered by CloudWatch events)
-- [ ] Lambda: failed login alerter (>5 failures → SNS notification)
-- [ ] Terraform: Lambda functions + execution roles (least privilege)
-- [ ] Add secure headers middleware to FastAPI (CSP, HSTS, X-Frame-Options)
-- [ ] HTTPS redirect: all HTTP → HTTPS
-- [ ] Verify: Lambda functions deployed and triggering correctly
+- [ ] Lambda: audit log processor code
+- [ ] Lambda: failed login alerter code
+- [ ] Secure headers middleware for FastAPI (CSP, HSTS, X-Frame-Options)
+- [ ] Continue design document: Sections 5–7
 
 ---
 
-## Phase 4: Testing & Scanning — Apr 20–May 3
+## Phase 4: Testing, Scanning & Polish — Apr 7–13
 
-### Infra Lead
+### Testing
 
 - [ ] Full Terraform review: no public DB, no wildcard IAM, encryption confirmed
 - [ ] `terraform destroy` + `terraform apply` — confirm clean deploy works
-- [ ] `docker-compose up` — confirm full local stack works from scratch
-- [ ] Write README.md setup guide (local + AWS deployment steps)
-- [ ] Verify: a teammate can clone repo + `docker-compose up` and it works
-
-### Backend: Auth & RBAC
-
+- [ ] `docker-compose up` from fresh clone — confirm works
 - [ ] Test permission boundaries: user can't access admin, mod can't act on wrong track
-- [ ] Test role escalation prevention: user can't promote themselves
+- [ ] Test role escalation prevention
 - [ ] Test banned user can't log in or post
 - [ ] Test JWT expiry and refresh flow
-- [ ] Verify: all permission tests pass, no bypass found
-
-### Backend: API & Data
-
 - [ ] Test invalid SoundCloud URLs rejected
-- [ ] Test editing/deleting posts by wrong user returns 403
+- [ ] Test edit/delete posts by wrong user returns 403
 - [ ] Test threaded replies maintain correct nesting
 - [ ] Test audit log captures all expected actions
 - [ ] Verify: all endpoints return correct status codes
 
-### Frontend
-
-- [ ] Test all role-specific UI (log in as each role, confirm correct view)
-- [ ] Error states: invalid URL, network error, unauthorized
-- [ ] Loading states on all async actions
-- [ ] Basic mobile responsiveness
-- [ ] Verify: no broken UI states across roles
-
-### Security & Docs
+### Vulnerability Scanning
 
 - [ ] Run OWASP ZAP scan against deployed app
 - [ ] Run Trivy scan on backend Docker image
 - [ ] Run pip-audit on Python dependencies
 - [ ] Document minimum 3 findings with severity + remediation
-- [ ] Complete design document (all sections)
+- [ ] Fix high/critical findings and rescan
+- [ ] Verify: scan reports saved, findings documented
+
+### Frontend Polish
+
+- [ ] Error states: invalid URL, network error, unauthorized
+- [ ] Loading states on all async actions
+- [ ] Basic mobile responsiveness
+- [ ] Test all role-specific UI
+- [ ] Verify: no broken UI states
+
+### Documentation (Anthony)
+
+- [ ] Complete design document (all sections, 6–8 pages)
 - [ ] Complete compliance checklist with evidence links
 - [ ] Complete security assessment (3–5 threats, Section 7)
-- [ ] Verify: scan reports saved, all high/critical findings remediated
+- [ ] Verify: all docs ready for submission
 
 ---
 
-## Phase 5: Polish & Present — May 4–10
+## Phase 5: Present — Apr 14–17
 
-### Everyone
+### Screenshots
 
-- [ ] Capture all required screenshots:
-  - [ ] VPC + subnets in AWS console
-  - [ ] Security Group rules (ALB, backend, RDS)
-  - [ ] RDS encryption status
-  - [ ] S3 bucket policy (SSE + Block Public Access)
-  - [ ] CloudTrail active
-  - [ ] Application running via HTTPS
-  - [ ] Discussion thread working (end-to-end)
-  - [ ] Vulnerability scan results
-- [ ] Assign presentation segments (15–20 min total)
-- [ ] Rehearse presentation at least once
+- [ ] VPC + subnets in AWS console
+- [ ] Security Group rules (ALB, backend, RDS)
+- [ ] RDS encryption status
+- [ ] S3 bucket policy (SSE + Block Public Access)
+- [ ] CloudTrail active
+- [ ] Application running via HTTPS
+- [ ] Discussion thread working (end-to-end)
+- [ ] Vulnerability scan results
 
-### Infra Lead
+### Presentation Prep
 
-- [ ] Finalize README.md
-- [ ] Confirm `terraform destroy` / `terraform apply` still clean
-- [ ] Pre-open AWS console tabs for demo (VPC, IAM, RDS, CloudTrail)
+- [ ] Build presentation slides
+- [ ] Assign segments (15–20 min total)
+- [ ] Rehearse at least once
+- [ ] Pre-open AWS console tabs for demo
+- [ ] Pre-cache 2–3 sample SoundCloud tracks for demo
+- [ ] Record backup demo video
+- [ ] Finalize README.md with full setup instructions
 
-### Frontend
-
-- [ ] Record backup demo video (screen recording of full flow)
-- [ ] Final UI polish
-
-### Security & Docs
-
-- [ ] Finalize all documentation files
-- [ ] Print/export compliance checklist with evidence mapped
-- [ ] Prepare 2–3 pre-cached sample tracks in case oEmbed is slow during demo
+### PRESENT: April 16–17
 
 ---
 
@@ -311,15 +296,3 @@ soundcloud-discuss/
 ├── .env.example
 └── README.md
 ```
-
----
-
-## Weekly Standup
-
-Every **Monday** — 15 minutes max. Each person answers:
-
-1. What did I finish last week?
-2. What am I doing this week?
-3. Am I blocked on anything?
-
-Track blockers immediately. Don't wait for standup.
