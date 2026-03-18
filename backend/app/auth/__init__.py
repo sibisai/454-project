@@ -1,6 +1,1 @@
-"""
-backend.app.auth — Authentication module.
-
-Contains routes for registration, login, and token refresh,
-along with JWT and password hashing utilities.
-"""
+"""Authentication module: registration, login, and password utilities."""
