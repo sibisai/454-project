@@ -1,10 +1,6 @@
-"""
-main.py — FastAPI application entry point.
+"""FastAPI application entry point."""
 
-Sets up the FastAPI app instance, registers CORS middleware,
-includes all API routers, and configures middleware
-(rate limiting, security headers, RBAC).
-"""
+# Database schema is managed by Alembic migrations — do not use create_all() here.
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
