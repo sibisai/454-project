@@ -16,6 +16,7 @@ def create_access_token(user_id: str, role: str) -> str:
     payload = {
         "sub": user_id,
         "role": role,
+        "type": "access",
         "exp": datetime.now(timezone.utc) + timedelta(minutes=15),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=ALGORITHM)
@@ -24,6 +25,7 @@ def create_access_token(user_id: str, role: str) -> str:
 def create_refresh_token(user_id: str) -> str:
     payload = {
         "sub": user_id,
+        "type": "refresh",
         "exp": datetime.now(timezone.utc) + timedelta(days=7),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=ALGORITHM)

@@ -48,3 +48,11 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     user: UserResponse
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class RefreshResponse(BaseModel):
+    access_token: str
