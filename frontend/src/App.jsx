@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import TrackSubmit from './pages/TrackSubmit';
 import './pages/auth.css';
 
 function Placeholder({ label }) {
@@ -31,7 +32,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/tracks/new" element={<ProtectedRoute><Placeholder label="Submit Track" /></ProtectedRoute>} />
+          <Route path="/tracks/new" element={<ProtectedRoute><TrackSubmit /></ProtectedRoute>} />
           <Route path="/tracks/:id" element={<Placeholder label="Track Detail" />} />
           <Route path="/dashboard" element={<ProtectedRoute><Placeholder label="Dashboard" /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute roles={['admin']}><Placeholder label="Admin Panel" /></ProtectedRoute>} />
