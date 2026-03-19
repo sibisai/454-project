@@ -8,7 +8,7 @@ from sqlalchemy import Boolean, Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 
-from . import Base
+from .base import Base
 
 
 class User(Base):
@@ -20,4 +20,4 @@ class User(Base):
     display_name = Column(String(100), nullable=False)
     global_role = Column(String(20), server_default="user", nullable=False)
     is_banned = Column(Boolean, server_default="false", nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
