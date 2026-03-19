@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -82,3 +83,55 @@ class ModeratorListResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+
+class AdminUserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    email: str
+    display_name: str
+    global_role: str
+    is_banned: bool
+    created_at: datetime
+    track_count: int
+    post_count: int
+
+
+class RoleChangeRequest(BaseModel):
+    role: Literal["user", "admin"]
+
+
+class PaginatedUsersResponse(BaseModel):
+    users: list[AdminUserResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class AuditLogResponse(BaseModel):
+    id: UUID
+    actor_id: UUID
+    actor_display_name: str
+    action: str
+    target_type: str
+    target_id: UUID
+    details: dict | None
+    created_at: datetime
+
+
+class PaginatedAuditLogResponse(BaseModel):
+    entries: list[AuditLogResponse]
+    total: int
+    page: int
+    per_page: int
+
+
+class AdminStatsResponse(BaseModel):
+    total_users: int
+    total_tracks: int
+    total_posts: int
+    total_removed_posts: int
+    banned_users: int
+    total_moderators: int
+    recent_actions: list[AuditLogResponse]
