@@ -11,9 +11,8 @@ const PER_PAGE = 12;
 function SkeletonCard() {
   return (
     <div className="skeleton-card">
-      <div className="skeleton-artwork" />
-      <div className="skeleton-lines">
-        <div className="skeleton-line" />
+      <div className="skeleton-embed" />
+      <div className="skeleton-meta">
         <div className="skeleton-line" />
         <div className="skeleton-line" />
       </div>
@@ -30,6 +29,7 @@ export default function Home() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sort, setSort] = useState('popular');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,13 +44,16 @@ export default function Home() {
     setLoading(true);
     setError('');
 
-    api.get('/tracks', {
-      params: {
-        page,
-        per_page: PER_PAGE,
-        search: debouncedSearch || undefined,
-      },
-    })
+    const params = {
+      page,
+      per_page: PER_PAGE,
+      search: debouncedSearch || undefined,
+    };
+    if (!debouncedSearch) {
+      params.sort = sort;
+    }
+
+    api.get('/tracks', { params })
       .then(({ data }) => {
         if (cancelled) return;
         setTracks(data.tracks);
@@ -65,7 +68,41 @@ export default function Home() {
       });
 
     return () => { cancelled = true; };
-  }, [page, debouncedSearch]);
+  }, [page, debouncedSearch, sort]);
+
+  async function handleLike(trackId, currentlyLiked) {
+    setTracks((prev) =>
+      prev.map((t) =>
+        t.id === trackId
+          ? {
+              ...t,
+              user_has_liked: !currentlyLiked,
+              like_count: t.like_count + (currentlyLiked ? -1 : 1),
+            }
+          : t
+      )
+    );
+
+    try {
+      if (currentlyLiked) {
+        await api.delete(`/tracks/${trackId}/like`);
+      } else {
+        await api.post(`/tracks/${trackId}/like`);
+      }
+    } catch {
+      setTracks((prev) =>
+        prev.map((t) =>
+          t.id === trackId
+            ? {
+                ...t,
+                user_has_liked: currentlyLiked,
+                like_count: t.like_count + (currentlyLiked ? 1 : -1),
+              }
+            : t
+        )
+      );
+    }
+  }
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
 
@@ -102,6 +139,27 @@ export default function Home() {
           </Link>
         )}
       </div>
+
+      {!debouncedSearch && (
+        <div className="sort-tabs" role="tablist" aria-label="Sort tracks">
+          <button
+            role="tab"
+            aria-selected={sort === 'popular'}
+            className={`sort-tab${sort === 'popular' ? ' active' : ''}`}
+            onClick={() => { setSort('popular'); setPage(1); }}
+          >
+            Popular
+          </button>
+          <button
+            role="tab"
+            aria-selected={sort === 'recent'}
+            className={`sort-tab${sort === 'recent' ? ' active' : ''}`}
+            onClick={() => { setSort('recent'); setPage(1); }}
+          >
+            Recent
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="error-banner home-error-banner" role="alert" aria-live="assertive">
@@ -140,7 +198,12 @@ export default function Home() {
         <>
           <div className="track-list">
             {tracks.map((track) => (
-              <TrackCard key={track.id} track={track} />
+              <TrackCard
+                key={track.id}
+                track={track}
+                onLike={handleLike}
+                isAuthenticated={isAuthenticated}
+              />
             ))}
           </div>
           {totalPages > 1 && (

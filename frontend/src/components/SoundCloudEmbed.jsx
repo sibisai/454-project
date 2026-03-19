@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
+import DOMPurify from "dompurify";
 
 let _loadPromise = null;
 function loadSCWidgetAPI() {
@@ -18,13 +19,23 @@ function loadSCWidgetAPI() {
   return _loadPromise;
 }
 
-export default function SoundCloudEmbed({ embedHtml, onMetadataLoaded }) {
+export default function SoundCloudEmbed({ embedHtml, artworkUrl, onMetadataLoaded }) {
   const containerRef = useRef(null);
   const onMetadataRef = useRef(onMetadataLoaded);
   onMetadataRef.current = onMetadataLoaded;
 
+  const sanitizedHtml = useMemo(
+    () => embedHtml
+      ? DOMPurify.sanitize(embedHtml, {
+          ALLOWED_TAGS: ['iframe'],
+          ALLOWED_ATTR: ['src', 'width', 'height', 'scrolling', 'frameborder', 'allow'],
+        })
+      : '',
+    [embedHtml]
+  );
+
   useEffect(() => {
-    if (!embedHtml) return;
+    if (!sanitizedHtml) return;
 
     let widget = null;
 
@@ -54,14 +65,19 @@ export default function SoundCloudEmbed({ embedHtml, onMetadataLoaded }) {
         widget.unbind(window.SC.Widget.Events.READY);
       }
     };
-  }, [embedHtml]);
+  }, [sanitizedHtml]);
 
-  if (!embedHtml) return null;
+  if (!sanitizedHtml) return null;
 
   return (
-    <div
-      ref={containerRef}
-      dangerouslySetInnerHTML={{ __html: embedHtml }}
-    />
+    <div className="sc-embed-dark">
+      {artworkUrl && (
+        <img className="sc-artwork-overlay" src={artworkUrl} alt="" loading="lazy" />
+      )}
+      <div
+        ref={containerRef}
+        dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+      />
+    </div>
   );
 }

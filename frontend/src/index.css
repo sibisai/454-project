@@ -38,6 +38,8 @@
   --transition-fast: 150ms ease;
 
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --sc-player-height: 166px; /* SC mini player is always 166px; artwork is a square of this size */
 }
 
 *,
@@ -146,8 +148,13 @@ textarea {
   transition: background var(--transition-fast);
 }
 
-.btn-accent:hover {
+.btn-accent:hover:not(:disabled) {
   background: var(--color-accent-hover);
+}
+
+.btn-accent:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .badge {
@@ -209,4 +216,28 @@ textarea {
 
 .error-link:hover {
   color: var(--color-primary-hover);
+}
+
+/* SoundCloud dark embed — inverts the light player to dark mode */
+.sc-embed-dark {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.sc-embed-dark iframe {
+  display: block;
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* Artwork overlay: un-inverted cover art over the inverted iframe */
+.sc-embed-dark .sc-artwork-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--sc-player-height);
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  z-index: 1;
 }
