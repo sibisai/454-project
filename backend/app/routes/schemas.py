@@ -17,8 +17,8 @@ class PostCreateRequest(BaseModel):
     content: str = Field(min_length=1, max_length=5000)
 
 
-class PostUpdateRequest(BaseModel):
-    content: str = Field(min_length=1, max_length=5000)
+# Same constraints for create and update
+PostUpdateRequest = PostCreateRequest
 
 
 class TrackResponse(BaseModel):
@@ -135,3 +135,93 @@ class AdminStatsResponse(BaseModel):
     banned_users: int
     total_moderators: int
     recent_actions: list[AuditLogResponse]
+
+
+# ── Analytics ──
+
+
+class TimeSeriesPoint(BaseModel):
+    date: str
+    count: int
+
+
+class AnalyticsResponse(BaseModel):
+    users_per_day: list[TimeSeriesPoint]
+    posts_per_day: list[TimeSeriesPoint]
+    mod_actions_per_day: list[TimeSeriesPoint]
+    tracks_per_day: list[TimeSeriesPoint]
+
+
+class TopTrackResponse(BaseModel):
+    track_id: UUID
+    title: str
+    artist_name: str
+    post_count: int
+    unique_commenters: int
+
+
+# ── User Profile ──
+
+
+class UserProfileResponse(BaseModel):
+    id: UUID
+    display_name: str
+    created_at: datetime
+    track_count: int
+    post_count: int
+    email: str | None = None
+    global_role: str | None = None
+    is_banned: bool | None = None
+
+
+class UserTrackSummary(BaseModel):
+    id: UUID
+    title: str
+    artist_name: str
+    post_count: int
+    created_at: datetime
+
+
+class PaginatedUserTracksResponse(BaseModel):
+    tracks: list[UserTrackSummary]
+    total: int
+    page: int
+    per_page: int
+
+
+class UserPostSummary(BaseModel):
+    id: UUID
+    content: str
+    track_id: UUID
+    track_title: str
+    created_at: datetime
+
+
+class PaginatedUserPostsResponse(BaseModel):
+    posts: list[UserPostSummary]
+    total: int
+    page: int
+    per_page: int
+
+
+# ── Dashboard ──
+
+
+class ModeratedTrackSummary(BaseModel):
+    id: UUID
+    title: str
+    artist_name: str
+    post_count: int
+
+
+class DashboardStats(BaseModel):
+    tracks_posted: int
+    posts_written: int
+    tracks_moderated: int
+
+
+class UserDashboardResponse(BaseModel):
+    my_tracks: list[UserTrackSummary]
+    moderated_tracks: list[ModeratedTrackSummary]
+    recent_activity: list[UserPostSummary]
+    stats: DashboardStats

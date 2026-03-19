@@ -1,21 +1,25 @@
 """routes/admin.py — Admin panel API endpoints (admin-only)."""
 
-from datetime import date
+from datetime import date, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import func
+from sqlalchemy import Date, func
 from sqlalchemy.orm import Session
 
 from app.middleware.rbac import get_current_user, require_role
 from app.models import AuditLog, Post, Track, TrackModerator, User, get_db
+from app.routes.helpers import get_user_or_404
 from app.routes.schemas import (
     AdminStatsResponse,
     AdminUserResponse,
+    AnalyticsResponse,
     AuditLogResponse,
     PaginatedAuditLogResponse,
     PaginatedUsersResponse,
     RoleChangeRequest,
+    TimeSeriesPoint,
+    TopTrackResponse,
 )
 from app.services.audit import (
     ACTION_MOD_REVOKED,
@@ -30,13 +34,6 @@ router = APIRouter(
     tags=["admin"],
     dependencies=[Depends(require_role("admin"))],
 )
-
-
-def _get_user_or_404(user_id: UUID, db: Session) -> User:
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    return user
 
 
 def _build_admin_user_response(user: User, db: Session) -> AdminUserResponse:
@@ -117,7 +114,7 @@ def change_user_role(
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_user),
 ):
-    target = _get_user_or_404(user_id, db)
+    target = get_user_or_404(user_id, db)
 
     if target.id == admin.id:
         raise HTTPException(
@@ -161,7 +158,7 @@ def ban_user(
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_user),
 ):
-    target = _get_user_or_404(user_id, db)
+    target = get_user_or_404(user_id, db)
 
     if target.id == admin.id:
         raise HTTPException(
@@ -214,7 +211,7 @@ def unban_user(
     db: Session = Depends(get_db),
     admin: User = Depends(get_current_user),
 ):
-    target = _get_user_or_404(user_id, db)
+    target = get_user_or_404(user_id, db)
 
     if not target.is_banned:
         raise HTTPException(
@@ -315,3 +312,79 @@ def get_stats(db: Session = Depends(get_db)):
         total_moderators=total_moderators,
         recent_actions=[_audit_entry_to_response(e, name) for e, name in recent_rows],
     )
+
+
+# ── Analytics ────────────────────────────────────────────────────────────────
+
+
+def _fill_time_series(
+    rows: list[tuple[date, int]], start_date: date, days: int
+) -> list[TimeSeriesPoint]:
+    counts_by_date = {row[0]: row[1] for row in rows}
+    return [
+        TimeSeriesPoint(
+            date=str(start_date + timedelta(days=i)),
+            count=counts_by_date.get(start_date + timedelta(days=i), 0),
+        )
+        for i in range(days)
+    ]
+
+
+@router.get("/analytics", response_model=AnalyticsResponse)
+def get_analytics(
+    days: int = Query(30, ge=1, le=90),
+    db: Session = Depends(get_db),
+):
+    start_date = date.today() - timedelta(days=days - 1)
+
+    def _count_by_day(created_col, extra_filter=None):
+        d = func.cast(created_col, Date).label("d")
+        q = db.query(d, func.count()).filter(func.cast(created_col, Date) >= start_date)
+        if extra_filter is not None:
+            q = q.filter(extra_filter)
+        return q.group_by(d).all()
+
+    users_rows = _count_by_day(User.created_at)
+    posts_rows = _count_by_day(Post.created_at, Post.is_removed.is_(False))
+    tracks_rows = _count_by_day(Track.created_at)
+    actions_rows = _count_by_day(AuditLog.created_at)
+
+    return AnalyticsResponse(
+        users_per_day=_fill_time_series(users_rows, start_date, days),
+        posts_per_day=_fill_time_series(posts_rows, start_date, days),
+        tracks_per_day=_fill_time_series(tracks_rows, start_date, days),
+        mod_actions_per_day=_fill_time_series(actions_rows, start_date, days),
+    )
+
+
+@router.get("/top-tracks", response_model=list[TopTrackResponse])
+def get_top_tracks(
+    limit: int = Query(10, ge=1, le=50),
+    db: Session = Depends(get_db),
+):
+    rows = (
+        db.query(
+            Track.id,
+            Track.title,
+            Track.artist_name,
+            func.count(Post.id).label("post_count"),
+            func.count(func.distinct(Post.author_id)).label("unique_commenters"),
+        )
+        .join(Post, Post.track_id == Track.id)
+        .filter(Post.is_removed.is_(False))
+        .group_by(Track.id)
+        .order_by(func.count(Post.id).desc())
+        .limit(limit)
+        .all()
+    )
+
+    return [
+        TopTrackResponse(
+            track_id=row.id,
+            title=row.title,
+            artist_name=row.artist_name,
+            post_count=row.post_count,
+            unique_commenters=row.unique_commenters,
+        )
+        for row in rows
+    ]

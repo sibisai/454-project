@@ -11,6 +11,7 @@ from app.routes.admin import router as admin_router
 from app.routes.moderation import router as moderation_router
 from app.routes.posts import router as posts_router
 from app.routes.tracks import router as tracks_router
+from app.routes.users import router as users_router
 
 app = FastAPI(title="SoundCloud Discussion Board API")
 
@@ -30,6 +31,7 @@ app.include_router(auth_router)
 app.include_router(moderation_router)
 app.include_router(posts_router)
 app.include_router(tracks_router)
+app.include_router(users_router)
 
 
 @app.get("/api/health")
