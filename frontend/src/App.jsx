@@ -1,29 +1,45 @@
-import { useState, useEffect } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import { AuthProvider } from './hooks/useAuth';
+import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import TrackSubmit from './pages/TrackSubmit';
+import TrackDetail from './pages/TrackDetail';
+import './pages/auth.css';
 
-function App() {
-  const [status, setStatus] = useState('Connecting...');
+function Placeholder({ label }) {
+  return <div className="error-page"><p className="error-message">{label}</p></div>;
+}
 
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === 'ok') {
-          setStatus('Connected to backend');
-        } else {
-          setStatus('Unexpected response');
-        }
-      })
-      .catch(() => {
-        setStatus('Failed to connect to backend');
-      });
-  }, []);
-
+function NotFound() {
   return (
-    <div style={{ fontFamily: 'sans-serif', textAlign: 'center', marginTop: '4rem' }}>
-      <h1>SoundCloud Discussion Board</h1>
-      <p>API Status: <strong>{status}</strong></p>
+    <div className="error-page">
+      <h1 className="error-code">404</h1>
+      <p className="error-message">Page Not Found</p>
+      <p className="error-description">The page you're looking for doesn't exist.</p>
+      <Link to="/" className="error-link">Back to Home</Link>
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <Navbar />
+      <main style={{ paddingTop: '60px' }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/tracks/new" element={<ProtectedRoute><TrackSubmit /></ProtectedRoute>} />
+          <Route path="/tracks/:id" element={<TrackDetail />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Placeholder label="Dashboard" /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute roles={['admin']}><Placeholder label="Admin Panel" /></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </AuthProvider>
+  );
+}

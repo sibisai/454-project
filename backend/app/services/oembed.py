@@ -33,7 +33,7 @@ def _build_embed_html(soundcloud_url: str) -> str:
     """Build an iframe embed from the track URL. Always succeeds."""
     embed_src = (
         f"https://w.soundcloud.com/player/?url={quote(soundcloud_url, safe='')}"
-        "&color=%23ff5500&auto_play=false&hide_related=true"
+        "&color=%2306B6D4&auto_play=false&hide_related=true"
         "&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"
     )
     return (
@@ -63,9 +63,14 @@ async def _try_oembed(client: httpx.AsyncClient, soundcloud_url: str) -> dict | 
         )
         if resp.status_code == 200:
             data = resp.json()
+            title = data["title"]
+            artist = data["author_name"]
+            suffix = f" by {artist}"
+            if title.lower().endswith(suffix.lower()):
+                title = title[: -len(suffix)]
             return {
-                "title": data["title"],
-                "artist_name": data["author_name"],
+                "title": title,
+                "artist_name": artist,
                 "artwork_url": data.get("thumbnail_url"),
             }
         logger.warning("oEmbed returned %d for %s", resp.status_code, soundcloud_url)

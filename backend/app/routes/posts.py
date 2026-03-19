@@ -2,19 +2,25 @@
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.middleware.rbac import get_current_user, get_user_track_role
-from app.models import Post, Track, User, get_db
-from app.routes.schemas import PostCreateRequest, PostResponse, PostUpdateRequest
+from app.models import Post, PostVote, Track, User, get_db
+from app.routes.schemas import PostCreateRequest, PostResponse, PostUpdateRequest, VoteRequest
 from app.services.audit import ACTION_POST_REMOVED, log_action
 
 router = APIRouter(tags=["posts"])
 
 
-def post_to_response(post: Post) -> PostResponse:
+def post_to_response(
+    post: Post,
+    score_map: dict | None = None,
+    user_vote_map: dict | None = None,
+) -> PostResponse:
+    score_map = score_map or {}
+    user_vote_map = user_vote_map or {}
     return PostResponse(
         id=post.id,
         track_id=post.track_id,
@@ -24,9 +30,14 @@ def post_to_response(post: Post) -> PostResponse:
         content="[removed]" if post.is_removed else post.content,
         is_pinned=post.is_pinned,
         is_removed=post.is_removed,
+        score=score_map.get(post.id, 0),
+        user_vote=user_vote_map.get(post.id, 0),
         created_at=post.created_at,
         updated_at=post.updated_at,
-        replies=[post_to_response(r) for r in post.replies],
+        replies=[
+            post_to_response(r, score_map, user_vote_map)
+            for r in post.replies
+        ],
     )
 
 
@@ -156,3 +167,65 @@ def delete_post(
         )
 
     db.commit()
+
+
+# ── Post Votes ──
+
+
+def _get_votable_post_or_404(db: Session, post_id: UUID) -> Post:
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    if post.is_removed:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot vote on a removed post",
+        )
+    return post
+
+
+@router.post(
+    "/api/posts/{post_id}/vote",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+def vote_post(
+    post_id: UUID,
+    body: VoteRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    _get_votable_post_or_404(db, post_id)
+
+    existing = (
+        db.query(PostVote)
+        .filter(PostVote.post_id == post_id, PostVote.user_id == user.id)
+        .first()
+    )
+    if existing:
+        existing.value = body.value
+    else:
+        db.add(PostVote(post_id=post_id, user_id=user.id, value=body.value))
+    db.commit()
+
+
+@router.delete(
+    "/api/posts/{post_id}/vote",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+)
+def remove_vote(
+    post_id: UUID,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    _get_votable_post_or_404(db, post_id)
+
+    existing = (
+        db.query(PostVote)
+        .filter(PostVote.post_id == post_id, PostVote.user_id == user.id)
+        .first()
+    )
+    if existing:
+        db.delete(existing)
+        db.commit()

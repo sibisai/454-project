@@ -13,6 +13,10 @@ class TrackCreateRequest(BaseModel):
     soundcloud_url: str
 
 
+class VoteRequest(BaseModel):
+    value: Literal[1, -1]
+
+
 class PostCreateRequest(BaseModel):
     content: str = Field(min_length=1, max_length=5000)
 
@@ -33,6 +37,8 @@ class TrackResponse(BaseModel):
     posted_by: UUID
     poster_display_name: str
     post_count: int
+    like_count: int = 0
+    user_has_liked: bool = False
     created_at: datetime
 
 
@@ -47,6 +53,8 @@ class PostResponse(BaseModel):
     content: str
     is_pinned: bool
     is_removed: bool
+    score: int = 0
+    user_vote: int = 0
     created_at: datetime
     updated_at: datetime | None
     replies: list[PostResponse] = []
