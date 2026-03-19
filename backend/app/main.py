@@ -5,6 +5,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.auth.routes import router as auth_router
 from app.routes.admin import router as admin_router
 from app.routes.moderation import router as moderation_router
@@ -13,6 +14,9 @@ from app.routes.tracks import router as tracks_router
 
 app = FastAPI(title="SoundCloud Discussion Board API")
 
+# Starlette middleware stack: last-added runs outermost (first on request).
+# CORS must be outermost so preflight OPTIONS responses get CORS headers.
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
