@@ -6,7 +6,7 @@ from app.auth.jwt import create_access_token, create_refresh_token, decode_token
 from app.auth.passwords import hash_password, verify_password
 from app.auth.schemas import LoginRequest, RefreshRequest, RefreshResponse, RegisterRequest, TokenResponse, UserResponse
 from app.middleware.rate_limit import check_rate_limit, clear_attempts, record_failed_attempt
-from app.middleware.rbac import get_current_user
+from app.middleware.rbac import get_current_user, resolve_user
 from app.models import User, get_db
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
@@ -71,24 +71,11 @@ def me(user: User = Depends(get_current_user)):
 
 @router.post("/refresh", response_model=RefreshResponse)
 def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
-    payload = decode_token(body.refresh_token)
-    if payload.get("type") != "refresh":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type"
-        )
-    user_id = payload.get("sub")
-    if not user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
-        )
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found"
-        )
-    if user.is_banned:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Account is suspended"
-        )
-    access_token = create_access_token(str(user.id), user.global_role)
-    return {"access_token": access_token}
+    payload = decode_token(body.refresh_token, expected_type="refresh")
+    user = resolve_user(payload, db)
+    # TODO: invalidate old refresh token — rotation without revocation leaves
+    # the previous token valid until expiry. Needs a server-side token store.
+    return {
+        "access_token": create_access_token(str(user.id), user.global_role),
+        "refresh_token": create_refresh_token(str(user.id)),
+    }

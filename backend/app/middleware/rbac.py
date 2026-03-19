@@ -11,20 +11,8 @@ from app.auth.jwt import decode_token
 from app.models import Track, TrackModerator, User, get_db
 
 
-def get_current_user(
-    authorization: str = Header(None), db: Session = Depends(get_db)
-) -> User:
-    if authorization is None or not authorization.startswith("Bearer "):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing or invalid token",
-        )
-    token = authorization.removeprefix("Bearer ")
-    payload = decode_token(token)
-    if payload.get("type") != "access":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token type"
-        )
+def resolve_user(payload: dict, db: Session) -> User:
+    """Look up user from a decoded JWT payload; raise on missing/banned."""
     user_id = payload.get("sub")
     if not user_id:
         raise HTTPException(
@@ -40,6 +28,19 @@ def get_current_user(
             status_code=status.HTTP_403_FORBIDDEN, detail="Account is suspended"
         )
     return user
+
+
+def get_current_user(
+    authorization: str = Header(None), db: Session = Depends(get_db)
+) -> User:
+    if authorization is None or not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing or invalid token",
+        )
+    token = authorization.removeprefix("Bearer ")
+    payload = decode_token(token, expected_type="access")
+    return resolve_user(payload, db)
 
 
 def require_role(*roles: str):
