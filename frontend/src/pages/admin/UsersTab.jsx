@@ -60,52 +60,30 @@ export default function UsersTab() {
 
   useEffect(() => { setPage(1); }, [roleFilter, bannedFilter]);
 
-  function showSuccess(msg) {
-    setSuccessMessage(msg);
-    setTimeout(() => setSuccessMessage(''), 3000);
-  }
-
-  async function handleRoleChange(userId, newRole) {
+  async function handleUserAction(userId, apiCall, successMsg, errorMsg) {
     setActionLoading(userId);
     setConfirmAction(null);
+    setError('');
     try {
-      const { data } = await api.put(`/admin/users/${userId}/role`, { role: newRole });
+      const { data } = await apiCall();
       setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)));
-      showSuccess(`Role changed to ${newRole}`);
+      setSuccessMessage(successMsg);
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to change role.');
+      setError(err.response?.data?.detail || errorMsg);
     } finally {
       setActionLoading(null);
     }
   }
 
-  async function handleBan(userId) {
-    setActionLoading(userId);
-    setConfirmAction(null);
-    try {
-      const { data } = await api.post(`/admin/users/${userId}/ban`);
-      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)));
-      showSuccess('User banned');
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to ban user.');
-    } finally {
-      setActionLoading(null);
-    }
-  }
+  const handleRoleChange = (userId, newRole) =>
+    handleUserAction(userId, () => api.put(`/admin/users/${userId}/role`, { role: newRole }), `Role changed to ${newRole}`, 'Failed to change role.');
 
-  async function handleUnban(userId) {
-    setActionLoading(userId);
-    setConfirmAction(null);
-    try {
-      const { data } = await api.delete(`/admin/users/${userId}/ban`);
-      setUsers((prev) => prev.map((u) => (u.id === userId ? data : u)));
-      showSuccess('User unbanned');
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to unban user.');
-    } finally {
-      setActionLoading(null);
-    }
-  }
+  const handleBan = (userId) =>
+    handleUserAction(userId, () => api.post(`/admin/users/${userId}/ban`), 'User banned', 'Failed to ban user.');
+
+  const handleUnban = (userId) =>
+    handleUserAction(userId, () => api.delete(`/admin/users/${userId}/ban`), 'User unbanned', 'Failed to unban user.');
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
 
@@ -208,6 +186,7 @@ export default function UsersTab() {
                           title={isSelf ? 'Cannot change own role' : ''}
                           onChange={(e) => {
                             const newRole = e.target.value;
+                            if (newRole === u.global_role) return;
                             setConfirmAction({
                               userId: u.id,
                               message: `Change role to ${newRole}?`,

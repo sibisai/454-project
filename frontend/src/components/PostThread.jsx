@@ -78,8 +78,8 @@ export default function PostThread({
     }
   }
 
-  const score = post.score || 0;
-  const userVote = post.user_vote || 0;
+  const score = post.score ?? 0;
+  const userVote = post.user_vote ?? 0;
 
   function VoteBtn({ value, activeClass, icon: Icon, label }) {
     if (!isAuthenticated || isAuthor) {

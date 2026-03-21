@@ -7,6 +7,7 @@ export default function ModeratorPanel({ trackId }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const [message, setMessage] = useState({ text: '', type: '' });
   const debounceRef = useRef(null);
@@ -31,8 +32,10 @@ export default function ModeratorPanel({ trackId }) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!searchQuery.trim()) {
       setSearchResults([]);
+      setHasSearched(false);
       return;
     }
+    setHasSearched(false);
     debounceRef.current = setTimeout(async () => {
       setSearching(true);
       try {
@@ -43,6 +46,7 @@ export default function ModeratorPanel({ trackId }) {
         setSearchResults([]);
       } finally {
         setSearching(false);
+        setHasSearched(true);
       }
     }, 300);
     return () => clearTimeout(debounceRef.current);
@@ -136,7 +140,7 @@ export default function ModeratorPanel({ trackId }) {
               ))}
             </ul>
           )}
-          {searchQuery.trim() && !searching && searchResults.length === 0 && (
+          {searchQuery.trim() && !searching && hasSearched && searchResults.length === 0 && (
             <p className="mod-search-empty">No users found.</p>
           )}
         </div>

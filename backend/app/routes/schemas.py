@@ -21,7 +21,6 @@ class PostCreateRequest(BaseModel):
     content: str = Field(min_length=1, max_length=5000)
 
 
-# Same constraints for create and update
 PostUpdateRequest = PostCreateRequest
 
 
