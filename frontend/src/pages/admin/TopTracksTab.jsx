@@ -57,7 +57,7 @@ export default function TopTracksTab() {
                 <span className="admin-leaderboard-artist">{t.artist_name}</span>
               </div>
               <div className="admin-leaderboard-stats">
-                <span>{t.post_count} posts</span>
+                <span>{t.post_count} comments</span>
                 <span>{t.unique_commenters} commenters</span>
               </div>
             </div>

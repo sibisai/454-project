@@ -9,6 +9,7 @@ import RemovePostButton from './RemovePostButton';
 const MAX_INDENT_DEPTH = 3;
 
 function getAuthorRole(post, trackPosterId, moderatorIds) {
+  if (post.author_global_role === 'admin') return 'admin';
   if (post.author_id === trackPosterId) return 'artist';
   if (moderatorIds?.has(post.author_id)) return 'moderator';
   return null;
@@ -81,7 +82,7 @@ export default function PostThread({
   const userVote = post.user_vote || 0;
 
   function VoteBtn({ value, activeClass, icon: Icon, label }) {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || isAuthor) {
       return <span className="post-vote-btn" aria-hidden="true"><Icon size={14} /></span>;
     }
     return (

@@ -31,7 +31,7 @@ export default function Navbar() {
             <li><Link to="/dashboard" className={isActive('/dashboard')}>Dashboard</Link></li>
           )}
           {user?.global_role === 'admin' && (
-            <li><Link to="/admin" className={isActive('/admin')}>Admin</Link></li>
+            <li><Link to="/admin" className={isActive('/admin')}>Admin Panel</Link></li>
           )}
         </ul>
       </div>

@@ -97,9 +97,9 @@ export default function Register() {
       await register(form.email, form.password, form.displayName);
       navigate('/');
     } catch (err) {
-      const status = err.response?.status;
-      if (status === 409) {
-        setServerError('Email is already registered');
+      const detail = err.response?.data?.detail;
+      if (err.response?.status === 409) {
+        setServerError(detail || 'Email is already registered');
       } else {
         setServerError('Something went wrong. Please try again.');
       }

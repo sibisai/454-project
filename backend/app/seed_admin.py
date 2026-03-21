@@ -7,7 +7,7 @@ Usage:
 from app.auth.passwords import hash_password
 from app.models import User, get_db
 
-ADMIN_EMAIL = "admin@soundcloud-discuss.com"
+ADMIN_EMAIL = "admin@admin.com"
 ADMIN_PASSWORD = "Admin123!"
 ADMIN_DISPLAY_NAME = "Admin"
 

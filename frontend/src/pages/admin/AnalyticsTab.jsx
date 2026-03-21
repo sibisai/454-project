@@ -8,7 +8,7 @@ const DAYS_OPTIONS = [7, 14, 30, 60, 90];
 
 const CHART_SERIES = [
   { key: 'users_per_day', label: 'New Users', color: '#06B6D4', gradId: 'gradCyan' },
-  { key: 'posts_per_day', label: 'Posts', color: '#10B981', gradId: 'gradEmerald' },
+  { key: 'posts_per_day', label: 'Comments', color: '#10B981', gradId: 'gradEmerald' },
   { key: 'tracks_per_day', label: 'Tracks', color: '#F59E0B', gradId: 'gradAmber' },
   { key: 'mod_actions_per_day', label: 'Mod Actions', color: '#F43F5E', gradId: 'gradRose' },
 ];

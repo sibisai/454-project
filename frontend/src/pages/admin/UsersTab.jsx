@@ -177,7 +177,7 @@ export default function UsersTab() {
 
                   <div className="admin-user-counts">
                     <span>{u.track_count} tracks</span>
-                    <span>{u.post_count} posts</span>
+                    <span>{u.post_count} comments</span>
                     <span className="admin-user-joined">{formatRelativeTime(u.created_at)}</span>
                   </div>
 

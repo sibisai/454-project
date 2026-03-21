@@ -10,6 +10,7 @@ export default function AuditLogTab() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [actionFilter, setActionFilter] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [loading, setLoading] = useState(true);
@@ -22,6 +23,7 @@ export default function AuditLogTab() {
 
     const params = { page, per_page: PER_PAGE };
     if (actionFilter) params.action = actionFilter;
+    if (roleFilter) params.actor_role = roleFilter;
     if (dateFrom) params.date_from = dateFrom;
     if (dateTo) params.date_to = dateTo;
 
@@ -40,11 +42,11 @@ export default function AuditLogTab() {
       });
 
     return () => { cancelled = true; };
-  }, [page, actionFilter, dateFrom, dateTo]);
+  }, [page, actionFilter, roleFilter, dateFrom, dateTo]);
 
   useEffect(() => fetchLog(), [fetchLog]);
 
-  useEffect(() => { setPage(1); }, [actionFilter, dateFrom, dateTo]);
+  useEffect(() => { setPage(1); }, [actionFilter, roleFilter, dateFrom, dateTo]);
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
 
@@ -61,6 +63,16 @@ export default function AuditLogTab() {
           {ALL_ACTIONS.map((a) => (
             <option key={a} value={a}>{a.replace(/_/g, ' ')}</option>
           ))}
+        </select>
+        <select
+          className="admin-select"
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          aria-label="Filter by role"
+        >
+          <option value="">All Roles</option>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
         </select>
         <input
           type="date"

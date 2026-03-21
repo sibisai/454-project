@@ -1,12 +1,12 @@
 export const ACTION_LABELS = {
-  post_removed: 'removed a post',
+  post_removed: 'removed a comment',
   user_banned: 'banned a user',
   user_unbanned: 'unbanned a user',
   role_changed: 'changed a user role',
   mod_delegated: 'delegated moderator',
   mod_revoked: 'revoked moderator',
-  post_pinned: 'pinned a post',
-  post_unpinned: 'unpinned a post',
+  post_pinned: 'pinned a comment',
+  post_unpinned: 'unpinned a comment',
 };
 
 export const ACTION_COLORS = {

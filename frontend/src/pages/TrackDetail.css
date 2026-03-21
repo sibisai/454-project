@@ -454,13 +454,20 @@
 }
 
 .mod-panel-summary::before {
-  content: '▸ ';
-  font-size: var(--font-xs);
-  color: var(--color-text-muted);
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 6px solid var(--color-text-muted);
+  margin-right: var(--space-2);
+  vertical-align: middle;
+  transition: transform 0.15s ease;
 }
 
 .mod-panel[open] .mod-panel-summary::before {
-  content: '▾ ';
+  transform: rotate(90deg);
 }
 
 .mod-panel-body {

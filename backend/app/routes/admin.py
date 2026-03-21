@@ -241,6 +241,7 @@ def list_audit_log(
     per_page: int = Query(50, ge=1, le=100),
     action: str | None = None,
     actor_id: UUID | None = None,
+    actor_role: str | None = None,
     target_type: str | None = None,
     date_from: date | None = None,
     date_to: date | None = None,
@@ -252,6 +253,8 @@ def list_audit_log(
         query = query.filter(AuditLog.action == action)
     if actor_id:
         query = query.filter(AuditLog.actor_id == actor_id)
+    if actor_role:
+        query = query.filter(User.global_role == actor_role)
     if target_type:
         query = query.filter(AuditLog.target_type == target_type)
     if date_from:

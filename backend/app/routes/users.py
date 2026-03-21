@@ -17,6 +17,7 @@ from app.routes.schemas import (
     UserDashboardResponse,
     UserPostSummary,
     UserProfileResponse,
+    UserSearchResult,
     UserTrackSummary,
 )
 
@@ -42,6 +43,26 @@ def _post_count_subquery(db: Session):
         .correlate(Track)
         .scalar_subquery()
     )
+
+
+# ── User Search (must be before /{user_id} to avoid UUID parse conflict) ─────
+
+
+@router.get("/search", response_model=list[UserSearchResult])
+def search_users(
+    q: str = Query(..., min_length=1, max_length=100),
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    escaped = q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+    pattern = f"%{escaped}%"
+    results = (
+        db.query(User.id, User.display_name)
+        .filter(User.display_name.ilike(pattern), User.is_banned.is_(False))
+        .limit(10)
+        .all()
+    )
+    return [UserSearchResult(id=r.id, display_name=r.display_name) for r in results]
 
 
 # ── Dashboard (must be before /{user_id} to avoid "me" parsed as UUID) ──────

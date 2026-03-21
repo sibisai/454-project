@@ -14,8 +14,8 @@ import { humanizeAction, ACTION_COLORS } from './utils';
 const STAT_CARDS = [
   { key: 'total_users', label: 'Total Users', icon: HiUsers, color: 'cyan' },
   { key: 'total_tracks', label: 'Total Tracks', icon: HiMusicalNote, color: 'emerald' },
-  { key: 'total_posts', label: 'Total Posts', icon: HiChatBubbleLeftRight, color: 'amber' },
-  { key: 'total_removed_posts', label: 'Removed Posts', icon: HiTrash, color: 'rose' },
+  { key: 'total_posts', label: 'Total Comments', icon: HiChatBubbleLeftRight, color: 'amber' },
+  { key: 'total_removed_posts', label: 'Removed Comments', icon: HiTrash, color: 'rose' },
   { key: 'banned_users', label: 'Banned Users', icon: HiNoSymbol, color: 'red' },
   { key: 'total_moderators', label: 'Moderators', icon: HiShieldCheck, color: 'emerald' },
 ];
