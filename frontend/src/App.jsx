@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import TrackSubmit from './pages/TrackSubmit';
 import TrackDetail from './pages/TrackDetail';
+import AdminPanel from './pages/AdminPanel';
 import './pages/auth.css';
 
 function Placeholder({ label }) {
@@ -36,7 +37,7 @@ export default function App() {
           <Route path="/tracks/new" element={<ProtectedRoute><TrackSubmit /></ProtectedRoute>} />
           <Route path="/tracks/:id" element={<TrackDetail />} />
           <Route path="/dashboard" element={<ProtectedRoute><Placeholder label="Dashboard" /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute roles={['admin']}><Placeholder label="Admin Panel" /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminPanel /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
