@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { HiMagnifyingGlass } from 'react-icons/hi2';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
@@ -144,7 +145,7 @@ export default function UsersTab() {
               return (
                 <div key={u.id} className="admin-user-row">
                   <div className="admin-user-info">
-                    <span className="admin-user-name">{u.display_name}</span>
+                    <Link to={`/users/${u.id}`} className="admin-user-name post-author-link">{u.display_name}</Link>
                     <span className="admin-user-email">{u.email}</span>
                   </div>
 

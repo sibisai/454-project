@@ -7,7 +7,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.middleware.rbac import get_current_user, get_optional_user
-from app.models import Post, Track, TrackModerator, User, get_db
+from app.models import Post, PostVote, Track, TrackModerator, User, get_db
 from app.routes.helpers import get_user_or_404
 from app.routes.schemas import (
     DashboardStats,
@@ -169,9 +169,11 @@ def get_user_profile(
         post_count=post_count,
     )
 
-    if is_admin:
+    is_self = requester is not None and requester.id == target.id
+    if is_admin or is_self:
         response.email = target.email
         response.global_role = target.global_role
+    if is_admin:
         response.is_banned = target.is_banned
 
     return response
@@ -225,8 +227,15 @@ def get_user_posts(
 ):
     _get_public_user_or_404(user_id, db, requester)
 
+    score_sq = (
+        db.query(func.coalesce(func.sum(PostVote.value), 0))
+        .filter(PostVote.post_id == Post.id)
+        .correlate(Post)
+        .scalar_subquery()
+    )
+
     query = (
-        db.query(Post.id, Post.content, Post.track_id, Track.title.label("track_title"), Post.created_at)
+        db.query(Post.id, Post.content, Post.track_id, Track.title.label("track_title"), score_sq.label("score"), Post.created_at)
         .join(Track, Post.track_id == Track.id)
         .filter(Post.author_id == user_id, Post.is_removed.is_(False))
     )
@@ -242,7 +251,7 @@ def get_user_posts(
         posts=[
             UserPostSummary(
                 id=r.id, content=r.content[:200], track_id=r.track_id,
-                track_title=r.track_title, created_at=r.created_at,
+                track_title=r.track_title, score=r.score, created_at=r.created_at,
             )
             for r in rows
         ],

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 
 export default function ModeratorPanel({ trackId }) {
@@ -99,7 +100,7 @@ export default function ModeratorPanel({ trackId }) {
           <ul className="mod-list">
             {moderators.map((mod) => (
               <li key={mod.user_id} className="mod-list-item">
-                <span className="mod-list-name">{mod.display_name}</span>
+                <Link to={`/users/${mod.user_id}`} className="mod-list-name post-author-link">{mod.display_name}</Link>
                 <button
                   className="btn-ghost mod-list-remove"
                   onClick={() => handleRemove(mod.user_id)}
