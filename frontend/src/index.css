@@ -251,3 +251,17 @@ textarea {
   pointer-events: none;
   z-index: 1;
 }
+
+/* ── Shared skeleton utilities ── */
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-hover);
+  animation: pulse 1.5s ease-in-out infinite;
+}

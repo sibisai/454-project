@@ -230,24 +230,12 @@
   padding: var(--space-3) var(--space-4);
 }
 
-.skeleton-line {
-  height: 14px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-hover);
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
 .skeleton-line:nth-child(1) {
   width: 50%;
 }
 
 .skeleton-line:nth-child(2) {
   width: 75%;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
 }
 
 /* Hero section (unauthenticated visitors) */

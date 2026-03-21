@@ -27,6 +27,7 @@ export default function Navbar() {
         </Link>
         <ul className="navbar-links">
           <li><Link to="/" className={isActive('/')}>Home</Link></li>
+          <li><Link to="/discover" className={isActive('/discover')}>Discover</Link></li>
           {isAuthenticated && (
             <li><Link to="/dashboard" className={isActive('/dashboard')}>Dashboard</Link></li>
           )}

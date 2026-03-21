@@ -10,6 +10,7 @@ import TrackDetail from './pages/TrackDetail';
 import AdminPanel from './pages/AdminPanel';
 import UserProfile from './pages/UserProfile';
 import Dashboard from './pages/Dashboard';
+import Discover from './pages/Discover';
 import './pages/auth.css';
 
 function NotFound() {
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/discover" element={<Discover />} />
           <Route path="/tracks/new" element={<ProtectedRoute><TrackSubmit /></ProtectedRoute>} />
           <Route path="/tracks/:id" element={<TrackDetail />} />
           <Route path="/users/:id" element={<UserProfile />} />

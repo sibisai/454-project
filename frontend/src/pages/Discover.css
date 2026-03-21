@@ -1,0 +1,387 @@
+.disc-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.disc-header {
+  margin-bottom: var(--space-8);
+}
+
+.disc-header h1 {
+  font-size: var(--font-3xl);
+  font-weight: 700;
+}
+
+.disc-subtitle {
+  color: var(--color-text-muted);
+  font-size: var(--font-sm);
+  margin-top: var(--space-1);
+}
+
+/* ── Sections ── */
+
+.disc-section {
+  margin-bottom: var(--space-10);
+  padding-bottom: var(--space-10);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.disc-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.disc-section-title {
+  font-size: var(--font-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+/* ── Trending hero card (#1) ── */
+
+.disc-hero-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+}
+
+.disc-hero-card:hover {
+  border-color: var(--color-primary);
+}
+
+.disc-hero-card:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.disc-hero-art {
+  width: 120px;
+  height: 120px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-hover);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.disc-hero-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  justify-content: center;
+}
+
+.disc-hero-rank {
+  font-size: var(--font-2xl);
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.disc-hero-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+}
+
+.disc-hero-artist {
+  font-size: var(--font-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Trending rank list (#2-10) ── */
+
+.disc-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.disc-rank-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+}
+
+.disc-rank-item:hover {
+  border-color: var(--color-primary);
+}
+
+.disc-rank-item:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.disc-rank-num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  min-width: 28px;
+  text-align: center;
+  font-size: var(--font-lg);
+  color: var(--color-text-muted);
+}
+
+.disc-rank-num.top-2,
+.disc-rank-num.top-3 {
+  color: var(--color-accent);
+}
+
+.disc-rank-art {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-hover);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.disc-rank-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.disc-rank-title {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.disc-rank-artist {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.disc-rank-posts {
+  font-size: var(--font-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+/* ── Horizontal scroll cards ── */
+
+.disc-scroll-row {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-2);
+}
+
+.disc-scroll-row::-webkit-scrollbar {
+  height: 4px;
+}
+
+.disc-scroll-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.disc-scroll-row::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+.disc-card {
+  flex-shrink: 0;
+  width: 180px;
+  scroll-snap-align: start;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+}
+
+.disc-card:hover {
+  border-color: var(--color-primary);
+}
+
+.disc-card:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.disc-card-art {
+  width: 100%;
+  aspect-ratio: 1;
+  background-color: var(--color-surface-hover);
+  background-size: cover;
+  background-position: center;
+}
+
+.disc-card-body {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.disc-card-title {
+  font-size: var(--font-sm);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.disc-card-artist {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.disc-card-time {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+/* ── New Arrivals grid ── */
+
+.disc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.disc-grid-card {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+}
+
+.disc-grid-card:hover {
+  border-color: var(--color-primary);
+}
+
+.disc-grid-card:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.disc-grid-art {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-hover);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.disc-grid-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+}
+
+/* ── Recommended empty states ── */
+
+.disc-rec-prompt {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.disc-rec-login {
+  display: inline-block;
+  margin-top: var(--space-3);
+}
+
+/* ── Skeleton pulse ── */
+
+.skeleton-pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* ── Cursor polish ── */
+
+.disc-rank-item,
+.disc-hero-card,
+.disc-card,
+.disc-grid-card {
+  cursor: pointer;
+}
+
+/* ── Mobile ── */
+
+@media (max-width: 600px) {
+  .disc-card {
+    width: 160px;
+  }
+
+  .disc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .disc-hero-art {
+    width: 80px;
+    height: 80px;
+  }
+
+  .disc-section-title {
+    font-size: var(--font-lg);
+  }
+}
+
+/* ── Reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .disc-scroll-row {
+    scroll-snap-type: none;
+  }
+
+  .disc-rank-item,
+  .disc-card,
+  .disc-hero-card,
+  .disc-grid-card {
+    transition: none;
+  }
+
+  .skeleton-pulse {
+    animation: none;
+  }
+}
