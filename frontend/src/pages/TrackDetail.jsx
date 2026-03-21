@@ -8,14 +8,22 @@ import { stripArtistSuffix } from '../utils/format';
 import SoundCloudEmbed from '../components/SoundCloudEmbed';
 import PostThread from '../components/PostThread';
 import ModeratorPanel from '../components/ModeratorPanel';
+import Skeleton from '../components/Skeleton';
+import ShareButton from '../components/ShareButton';
+import UserHoverCard from '../components/UserHoverCard';
 import './TrackDetail.css';
 
 function TrackDetailSkeleton() {
   return (
     <div className="detail-container">
-      <div className="skeleton-embed-lg" />
+      <Skeleton variant="rect" height={166} width="100%" />
       <div className="skeleton-meta-bar">
-        <div className="skeleton-line" style={{ width: '60%' }} />
+        <Skeleton width="60%" height={16} />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
+        <Skeleton width="30%" height={20} />
+        <Skeleton width="100%" height={60} variant="rect" />
+        <Skeleton width="100%" height={60} variant="rect" />
       </div>
     </div>
   );
@@ -101,16 +109,11 @@ export default function TrackDetail() {
   const handleDelete = (postId) =>
     mutatePost(() => api.delete(`/posts/${postId}`), 'Failed to delete post. Please try again.');
 
-  const handleRemove = (postId) =>
-    mutatePost(() => api.delete(`/posts/${postId}`), 'Failed to remove post. Please try again.');
-
-  async function handlePin(postId, pin) {
-    const method = pin ? 'post' : 'delete';
-    await mutatePost(
-      () => api[method](`/tracks/${id}/pin/${postId}`),
+  const handlePin = (postId, pin) =>
+    mutatePost(
+      () => api[pin ? 'post' : 'delete'](`/tracks/${id}/pin/${postId}`),
       `Failed to ${pin ? 'pin' : 'unpin'} post.`
     );
-  }
 
   async function handleLike() {
     if (!track || !isAuthenticated) return;
@@ -123,11 +126,7 @@ export default function TrackDetail() {
     }));
 
     try {
-      if (wasLiked) {
-        await api.delete(`/tracks/${id}/like`);
-      } else {
-        await api.post(`/tracks/${id}/like`);
-      }
+      await api[wasLiked ? 'delete' : 'post'](`/tracks/${id}/like`);
     } catch {
       setTrack((prev) => ({
         ...prev,
@@ -165,11 +164,9 @@ export default function TrackDetail() {
     });
 
     try {
-      if (newVote === 0) {
-        await api.delete(`/posts/${postId}/vote`);
-      } else {
-        await api.post(`/posts/${postId}/vote`, { value: newVote });
-      }
+      await (newVote === 0
+        ? api.delete(`/posts/${postId}/vote`)
+        : api.post(`/posts/${postId}/vote`, { value: newVote }));
     } catch {
       await fetchTrack();
     }
@@ -201,10 +198,10 @@ export default function TrackDetail() {
   const commentLabel = `${track.post_count} ${track.post_count === 1 ? 'comment' : 'comments'}`;
   const userRole = track.user_role;
   const canManageMods = userRole === 'artist' || userRole === 'admin';
-  const pinnedCount = (track.posts || []).filter((p) => p.is_pinned).length;
+  const posts = track.posts || [];
+  const pinnedCount = posts.filter((p) => p.is_pinned).length;
 
-  // Sort: pinned first, then by selected sort mode
-  const sortedPosts = [...(track.posts || [])].sort((a, b) => {
+  const sortedPosts = [...posts].sort((a, b) => {
     if (a.is_pinned && !b.is_pinned) return -1;
     if (!a.is_pinned && b.is_pinned) return 1;
     if (commentSort === 'popular') return (b.score || 0) - (a.score || 0);
@@ -223,41 +220,44 @@ export default function TrackDetail() {
         <div className="detail-meta">
           <span>
             Posted by{' '}
-            <Link to={`/users/${track.posted_by}`} className="post-author-link">
-              {track.poster_display_name}
-            </Link>
+            <UserHoverCard userId={track.posted_by}>
+              <Link to={`/users/${track.posted_by}`} className="post-author-link">
+                {track.poster_display_name}
+              </Link>
+            </UserHoverCard>
           </span>
           <span aria-hidden="true">&middot;</span>
           <span>{formatRelativeTime(track.created_at)}</span>
           <span aria-hidden="true">&middot;</span>
           <span>{commentLabel}</span>
         </div>
-        {isAuthenticated ? (
-          <button
-            className={`detail-like-btn${track.user_has_liked ? ' liked' : ''}`}
-            onClick={handleLike}
-            aria-label={track.user_has_liked ? 'Unlike track' : 'Like track'}
-          >
-            {track.user_has_liked ? <HiHeart size={18} /> : <HiOutlineHeart size={18} />}
-            <span>{track.like_count}</span>
-          </button>
-        ) : track.like_count > 0 ? (
-          <span className="detail-like-count">
-            <HiOutlineHeart size={16} />
-            {track.like_count}
-          </span>
-        ) : null}
+        <div className="detail-actions">
+          <ShareButton url={`${window.location.origin}/tracks/${id}`} variant="button" />
+          {isAuthenticated ? (
+            <button
+              className={`detail-like-btn${track.user_has_liked ? ' liked' : ''}`}
+              onClick={handleLike}
+              aria-label={track.user_has_liked ? 'Unlike track' : 'Like track'}
+            >
+              {track.user_has_liked ? <HiHeart size={18} /> : <HiOutlineHeart size={18} />}
+              <span>{track.like_count}</span>
+            </button>
+          ) : track.like_count > 0 ? (
+            <span className="detail-like-count">
+              <HiOutlineHeart size={16} />
+              {track.like_count}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {userRole && (
         <div className={`role-indicator role-indicator-${userRole}`}>
-          {userRole === 'artist' && 'You are the artist on this track'}
-          {userRole === 'moderator' && 'You are a moderator on this track'}
-          {userRole === 'admin' && 'You are an admin'}
+          {{ artist: 'You are the artist on this track', moderator: 'You are a moderator on this track', admin: 'You are an admin' }[userRole]}
         </div>
       )}
 
-      {canManageMods && <ModeratorPanel trackId={id} />}
+      {canManageMods && <ModeratorPanel trackId={id} onUpdate={fetchModerators} />}
 
       <section className="detail-discussion" aria-label="Discussion">
         <div className="discussion-header">
@@ -266,24 +266,19 @@ export default function TrackDetail() {
             Discussion
             <span className="detail-comment-count">&middot; {commentLabel}</span>
           </h2>
-          {track.posts?.length > 1 && (
+          {posts.length > 1 && (
             <div className="discussion-sort-tabs" role="tablist" aria-label="Sort comments">
-              <button
-                role="tab"
-                aria-selected={commentSort === 'popular'}
-                className={`sort-tab${commentSort === 'popular' ? ' active' : ''}`}
-                onClick={() => setCommentSort('popular')}
-              >
-                Popular
-              </button>
-              <button
-                role="tab"
-                aria-selected={commentSort === 'recent'}
-                className={`sort-tab${commentSort === 'recent' ? ' active' : ''}`}
-                onClick={() => setCommentSort('recent')}
-              >
-                Recent
-              </button>
+              {['popular', 'recent'].map((mode) => (
+                <button
+                  key={mode}
+                  role="tab"
+                  aria-selected={commentSort === mode}
+                  className={`sort-tab${commentSort === mode ? ' active' : ''}`}
+                  onClick={() => setCommentSort(mode)}
+                >
+                  {mode[0].toUpperCase() + mode.slice(1)}
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -330,7 +325,6 @@ export default function TrackDetail() {
                 post={post}
                 currentUser={user}
                 userRole={userRole}
-                trackId={id}
                 trackPosterId={track.posted_by}
                 moderatorIds={moderatorIds}
                 pinnedCount={pinnedCount}
@@ -338,7 +332,7 @@ export default function TrackDetail() {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onPin={handlePin}
-                onRemove={handleRemove}
+                onRemove={handleDelete}
                 onVotePost={handleVotePost}
                 isAuthenticated={isAuthenticated}
               />

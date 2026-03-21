@@ -218,7 +218,25 @@ class PaginatedUserPostsResponse(BaseModel):
     per_page: int
 
 
-# ── Dashboard ──
+# ── Discover ──
+
+
+class DiscoverTrackResponse(BaseModel):
+    id: UUID
+    title: str
+    artist_name: str
+    artwork_url: str | None
+    post_count: int
+    posted_by_display_name: str
+    last_activity: datetime | None = None
+    created_at: datetime | None = None
+
+
+class DiscoverResponse(BaseModel):
+    trending: list[DiscoverTrackResponse]
+    recently_active: list[DiscoverTrackResponse]
+    new_arrivals: list[DiscoverTrackResponse]
+    recommended: list[DiscoverTrackResponse]
 
 
 class ModeratedTrackSummary(BaseModel):

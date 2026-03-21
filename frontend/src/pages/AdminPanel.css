@@ -27,6 +27,12 @@
   white-space: nowrap;
 }
 
+.admin-tabs-select {
+  display: none;
+  width: 100%;
+  margin-bottom: var(--space-6);
+}
+
 .admin-tab-content {
   min-height: 300px;
 }
@@ -470,9 +476,17 @@
   white-space: nowrap;
 }
 
-/* ── Mobile ─────────────────────────────────────────────────────────────── */
+/* ── 768px tablet breakpoint ── */
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .admin-tabs {
+    display: none;
+  }
+
+  .admin-tabs-select {
+    display: block;
+  }
+
   .admin-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -509,13 +523,12 @@
   .admin-leaderboard-stats {
     width: 100%;
   }
+}
 
-  .admin-tabs {
-    gap: var(--space-1);
-  }
+/* ── 600px phone breakpoint ── */
 
-  .admin-tab {
-    font-size: var(--font-xs);
-    padding: var(--space-2) var(--space-3);
+@media (max-width: 600px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
   }
 }

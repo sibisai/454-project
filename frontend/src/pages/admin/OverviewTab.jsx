@@ -11,6 +11,8 @@ import {
 import api from '../../services/api';
 import { formatRelativeTime } from '../../utils/time';
 import { humanizeAction, ACTION_COLORS } from './utils';
+import Skeleton from '../../components/Skeleton';
+import UserHoverCard from '../../components/UserHoverCard';
 
 const STAT_CARDS = [
   { key: 'total_users', label: 'Total Users', icon: HiUsers, color: 'cyan' },
@@ -35,7 +37,25 @@ export default function OverviewTab() {
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <div className="admin-loading">Loading stats…</div>;
+  if (loading) return (
+    <div>
+      <div className="admin-stats-grid">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div key={i} className="admin-stat-card">
+            <Skeleton variant="rect" width={44} height={44} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+              <Skeleton width="50%" height={24} />
+              <Skeleton width="70%" height={12} />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+        <Skeleton width="30%" height={20} />
+        {[1, 2, 3].map((i) => <Skeleton key={i} width="100%" height={40} />)}
+      </div>
+    </div>
+  );
   if (error) return <div className="admin-empty">{error}</div>;
 
   return (
@@ -63,7 +83,9 @@ export default function OverviewTab() {
                 className="admin-audit-dot"
                 style={{ backgroundColor: ACTION_COLORS[entry.action] || '#94A3B8' }}
               />
-              <Link to={`/users/${entry.actor_id}`} className="admin-recent-actor post-author-link">{entry.actor_display_name}</Link>
+              <UserHoverCard userId={entry.actor_id}>
+                <Link to={`/users/${entry.actor_id}`} className="admin-recent-actor post-author-link">{entry.actor_display_name}</Link>
+              </UserHoverCard>
               <span className="admin-recent-action">{humanizeAction(entry.action)}</span>
               <span className="admin-recent-time">{formatRelativeTime(entry.created_at)}</span>
             </div>

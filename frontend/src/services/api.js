@@ -4,17 +4,21 @@ const api = axios.create({
   baseURL: '/api',
 });
 
-let accessToken = null;
-let refreshToken = null;
+let accessToken = localStorage.getItem('access_token');
+let refreshToken = localStorage.getItem('refresh_token');
 
 export function setAuthTokens(access, refresh) {
   accessToken = access;
   refreshToken = refresh;
+  localStorage.setItem('access_token', access);
+  localStorage.setItem('refresh_token', refresh);
 }
 
 export function clearAuthTokens() {
   accessToken = null;
   refreshToken = null;
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
 }
 
 export function getRefreshToken() {
@@ -32,13 +36,9 @@ let isRefreshing = false;
 let failedQueue = [];
 
 function processQueue(error, token) {
-  failedQueue.forEach(({ resolve, reject }) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve(token);
-    }
-  });
+  failedQueue.forEach(({ resolve, reject }) =>
+    error ? reject(error) : resolve(token)
+  );
   failedQueue = [];
 }
 

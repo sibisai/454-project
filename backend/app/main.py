@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.auth.routes import router as auth_router
 from app.routes.admin import router as admin_router
+from app.routes.discover import router as discover_router
 from app.routes.moderation import router as moderation_router
 from app.routes.posts import router as posts_router
 from app.routes.tracks import router as tracks_router
@@ -27,6 +28,7 @@ app.add_middleware(
 )
 
 app.include_router(admin_router)
+app.include_router(discover_router)
 app.include_router(auth_router)
 app.include_router(moderation_router)
 app.include_router(posts_router)

@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useCallback } from 'react';
-import api, { setAuthTokens, clearAuthTokens } from '../services/api';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import api, { setAuthTokens, clearAuthTokens, getRefreshToken } from '../services/api';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [restoring, setRestoring] = useState(true);
 
   const login = useCallback(async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
@@ -33,14 +34,24 @@ export function AuthProvider({ children }) {
       setUser(data);
       return data;
     } catch {
+      clearAuthTokens();
       setUser(null);
       return null;
     }
   }, []);
 
+  useEffect(() => {
+    if (!getRefreshToken()) {
+      setRestoring(false);
+      return;
+    }
+    refreshUser().finally(() => setRestoring(false));
+  }, [refreshUser]);
+
   const value = {
     user,
     isAuthenticated: !!user,
+    restoring,
     login,
     register,
     logout,

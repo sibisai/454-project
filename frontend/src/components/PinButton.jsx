@@ -1,7 +1,7 @@
-import { HiBookmark, HiOutlineBookmark } from 'react-icons/hi2';
+import { BsPinAngleFill, BsPinAngle } from 'react-icons/bs';
 
 export default function PinButton({ isPinned, disabled, onClick, loading }) {
-  const Icon = isPinned ? HiBookmark : HiOutlineBookmark;
+  const Icon = isPinned ? BsPinAngleFill : BsPinAngle;
   return (
     <button
       className={`post-action post-action-pin${isPinned ? ' pinned' : ''}`}

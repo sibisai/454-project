@@ -4,6 +4,7 @@ import { HiMagnifyingGlass, HiMusicalNote } from 'react-icons/hi2';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import TrackCard from '../components/TrackCard';
+import Skeleton from '../components/Skeleton';
 import './Home.css';
 
 const PER_PAGE = 12;
@@ -11,10 +12,10 @@ const PER_PAGE = 12;
 function SkeletonCard() {
   return (
     <div className="skeleton-card">
-      <div className="skeleton-embed" />
+      <Skeleton variant="rect" height="var(--sc-player-height)" width="100%" />
       <div className="skeleton-meta">
-        <div className="skeleton-line" />
-        <div className="skeleton-line" />
+        <Skeleton width="50%" />
+        <Skeleton width="75%" />
       </div>
     </div>
   );

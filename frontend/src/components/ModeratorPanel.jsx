@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import UserHoverCard from './UserHoverCard';
 
-export default function ModeratorPanel({ trackId }) {
+export default function ModeratorPanel({ trackId, onUpdate }) {
   const [moderators, setModerators] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,6 +60,7 @@ export default function ModeratorPanel({ trackId }) {
     try {
       await api.post(`/tracks/${trackId}/moderators/${userId}`);
       await fetchModerators();
+      onUpdate?.();
       setSearchQuery('');
       setSearchResults([]);
     } catch (err) {
@@ -75,6 +77,7 @@ export default function ModeratorPanel({ trackId }) {
     try {
       await api.delete(`/tracks/${trackId}/moderators/${userId}`);
       await fetchModerators();
+      onUpdate?.();
     } catch (err) {
       const detail = err.response?.data?.detail || 'Failed to remove moderator.';
       setMessage({ text: detail, type: 'error' });
@@ -100,7 +103,9 @@ export default function ModeratorPanel({ trackId }) {
           <ul className="mod-list">
             {moderators.map((mod) => (
               <li key={mod.user_id} className="mod-list-item">
-                <Link to={`/users/${mod.user_id}`} className="mod-list-name post-author-link">{mod.display_name}</Link>
+                <UserHoverCard userId={mod.user_id}>
+                  <Link to={`/users/${mod.user_id}`} className="mod-list-name post-author-link">{mod.display_name}</Link>
+                </UserHoverCard>
                 <button
                   className="btn-ghost mod-list-remove"
                   onClick={() => handleRemove(mod.user_id)}
