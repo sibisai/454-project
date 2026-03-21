@@ -1,7 +1,3 @@
-"""
-models/user.py — SQLAlchemy User model.
-"""
-
 from uuid import uuid4
 
 from sqlalchemy import Boolean, Column, DateTime, String

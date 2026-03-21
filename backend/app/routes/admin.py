@@ -83,7 +83,7 @@ def list_users(
     query = db.query(User)
 
     if search:
-        escaped = search.replace("%", "\\%").replace("_", "\\_")
+        escaped = search.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
         pattern = f"%{escaped}%"
         query = query.filter(User.email.ilike(pattern) | User.display_name.ilike(pattern))
     if role is not None:

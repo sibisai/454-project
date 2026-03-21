@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 
 export default function ModeratorPanel({ trackId }) {
@@ -7,6 +8,7 @@ export default function ModeratorPanel({ trackId }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const [message, setMessage] = useState({ text: '', type: '' });
   const debounceRef = useRef(null);
@@ -31,8 +33,10 @@ export default function ModeratorPanel({ trackId }) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!searchQuery.trim()) {
       setSearchResults([]);
+      setHasSearched(false);
       return;
     }
+    setHasSearched(false);
     debounceRef.current = setTimeout(async () => {
       setSearching(true);
       try {
@@ -43,6 +47,7 @@ export default function ModeratorPanel({ trackId }) {
         setSearchResults([]);
       } finally {
         setSearching(false);
+        setHasSearched(true);
       }
     }, 300);
     return () => clearTimeout(debounceRef.current);
@@ -95,7 +100,7 @@ export default function ModeratorPanel({ trackId }) {
           <ul className="mod-list">
             {moderators.map((mod) => (
               <li key={mod.user_id} className="mod-list-item">
-                <span className="mod-list-name">{mod.display_name}</span>
+                <Link to={`/users/${mod.user_id}`} className="mod-list-name post-author-link">{mod.display_name}</Link>
                 <button
                   className="btn-ghost mod-list-remove"
                   onClick={() => handleRemove(mod.user_id)}
@@ -136,7 +141,7 @@ export default function ModeratorPanel({ trackId }) {
               ))}
             </ul>
           )}
-          {searchQuery.trim() && !searching && searchResults.length === 0 && (
+          {searchQuery.trim() && !searching && hasSearched && searchResults.length === 0 && (
             <p className="mod-search-empty">No users found.</p>
           )}
         </div>

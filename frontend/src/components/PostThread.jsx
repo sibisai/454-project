@@ -78,8 +78,8 @@ export default function PostThread({
     }
   }
 
-  const score = post.score || 0;
-  const userVote = post.user_vote || 0;
+  const score = post.score ?? 0;
+  const userVote = post.user_vote ?? 0;
 
   function VoteBtn({ value, activeClass, icon: Icon, label }) {
     if (!isAuthenticated || isAuthor) {
@@ -101,7 +101,7 @@ export default function PostThread({
       className="post-thread"
       style={{ marginLeft: indentLevel > 0 ? 'var(--space-5)' : 0 }}
     >
-      <article className={['post', post.is_removed && 'post-removed', post.is_pinned && 'post-pinned'].filter(Boolean).join(' ')}>
+      <article className={['post', post.is_removed && 'post-removed', post.is_pinned && 'post-pinned', isAuthor && 'post-own'].filter(Boolean).join(' ')}>
         <div className="post-header">
           <span className="post-author">
             {post.is_pinned && <HiBookmark size={14} className="post-pin-icon" aria-label="Pinned" />}
@@ -143,11 +143,16 @@ export default function PostThread({
 
         {!post.is_removed && !editOpen && (
           <div className="post-actions">
-            <div className="post-vote-group">
-              <VoteBtn value={1} activeClass="voted-up" icon={HiHandThumbUp} label="Upvote" />
-              {score !== 0 && <span className="post-vote-score">{score}</span>}
-              <VoteBtn value={-1} activeClass="voted-down" icon={HiHandThumbDown} label="Downvote" />
-            </div>
+            {!isAuthor && (
+              <div className="post-vote-group">
+                <VoteBtn value={1} activeClass="voted-up" icon={HiHandThumbUp} label="Upvote" />
+                {score !== 0 && <span className="post-vote-score">{score}</span>}
+                <VoteBtn value={-1} activeClass="voted-down" icon={HiHandThumbDown} label="Downvote" />
+              </div>
+            )}
+            {isAuthor && score !== 0 && (
+              <span className="post-vote-score">{score}</span>
+            )}
             {canPin && (
               <PinButton
                 isPinned={post.is_pinned}

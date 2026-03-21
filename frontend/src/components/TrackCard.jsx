@@ -4,7 +4,7 @@ import { formatRelativeTime } from '../utils/time';
 import SoundCloudEmbed from './SoundCloudEmbed';
 
 export default function TrackCard({ track, onLike, isAuthenticated }) {
-  const { id, poster_display_name, post_count, like_count, user_has_liked, created_at, embed_html, artwork_url } = track;
+  const { id, posted_by, poster_display_name, post_count, like_count, user_has_liked, created_at, embed_html, artwork_url } = track;
 
   function handleLikeClick(e) {
     e.preventDefault();
@@ -21,7 +21,7 @@ export default function TrackCard({ track, onLike, isAuthenticated }) {
       )}
       <div className="track-card-body">
         <span className="track-card-meta-link">
-          <span>Posted by {poster_display_name}</span>
+          <span>Posted by <Link to={`/users/${posted_by}`} className="post-author-link" onClick={(e) => e.stopPropagation()}>{poster_display_name}</Link></span>
           <span aria-hidden="true">&middot;</span>
           <span>{post_count} {post_count === 1 ? 'comment' : 'comments'}</span>
           <span aria-hidden="true">&middot;</span>

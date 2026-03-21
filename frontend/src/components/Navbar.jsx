@@ -42,7 +42,7 @@ export default function Navbar() {
             <span className={`badge badge-${user.global_role}`}>
               {user.global_role}
             </span>
-            <span className="navbar-display-name">{user.display_name}</span>
+            <Link to={`/users/${user.id}`} className="navbar-display-name">{user.display_name}</Link>
             <button
               className="btn-logout"
               onClick={handleLogout}

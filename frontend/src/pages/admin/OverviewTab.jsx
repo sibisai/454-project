@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   HiUsers,
   HiMusicalNote,
@@ -62,7 +63,7 @@ export default function OverviewTab() {
                 className="admin-audit-dot"
                 style={{ backgroundColor: ACTION_COLORS[entry.action] || '#94A3B8' }}
               />
-              <span className="admin-recent-actor">{entry.actor_display_name}</span>
+              <Link to={`/users/${entry.actor_id}`} className="admin-recent-actor post-author-link">{entry.actor_display_name}</Link>
               <span className="admin-recent-action">{humanizeAction(entry.action)}</span>
               <span className="admin-recent-time">{formatRelativeTime(entry.created_at)}</span>
             </div>
