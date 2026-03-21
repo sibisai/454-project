@@ -26,6 +26,7 @@ def post_to_response(
         track_id=post.track_id,
         author_id=post.author_id,
         author_display_name="[removed]" if post.is_removed else post.author.display_name,
+        author_global_role="user" if post.is_removed else post.author.global_role,
         parent_id=post.parent_id,
         content="[removed]" if post.is_removed else post.content,
         is_pinned=post.is_pinned,
@@ -195,7 +196,13 @@ def vote_post(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    _get_votable_post_or_404(db, post_id)
+    post = _get_votable_post_or_404(db, post_id)
+
+    if post.author_id == user.id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot vote on your own comment",
+        )
 
     existing = (
         db.query(PostVote)

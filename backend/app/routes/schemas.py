@@ -49,6 +49,7 @@ class PostResponse(BaseModel):
     track_id: UUID
     author_id: UUID
     author_display_name: str
+    author_global_role: str = "user"
     parent_id: UUID | None
     content: str
     is_pinned: bool
@@ -166,6 +167,11 @@ class TopTrackResponse(BaseModel):
     artist_name: str
     post_count: int
     unique_commenters: int
+
+
+class UserSearchResult(BaseModel):
+    id: UUID
+    display_name: str
 
 
 # ── User Profile ──

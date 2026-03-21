@@ -1,10 +1,25 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { HiBookmark, HiPencil, HiTrash, HiChatBubbleLeft, HiHandThumbUp, HiHandThumbDown } from 'react-icons/hi2';
 import { formatRelativeTime } from '../utils/time';
+import RoleBadge from './RoleBadge';
+import PinButton from './PinButton';
+import RemovePostButton from './RemovePostButton';
 
 const MAX_INDENT_DEPTH = 3;
 
-export default function PostThread({ post, currentUser, depth = 0, onReply, onEdit, onDelete, onVotePost, isAuthenticated }) {
+function getAuthorRole(post, trackPosterId, moderatorIds) {
+  if (post.author_global_role === 'admin') return 'admin';
+  if (post.author_id === trackPosterId) return 'artist';
+  if (moderatorIds?.has(post.author_id)) return 'moderator';
+  return null;
+}
+
+export default function PostThread({
+  post, currentUser, depth = 0,
+  onReply, onEdit, onDelete, onVotePost, isAuthenticated,
+  userRole, trackId, trackPosterId, moderatorIds, pinnedCount, onPin, onRemove,
+}) {
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyContent, setReplyContent] = useState('');
   const [replying, setReplying] = useState(false);
@@ -22,6 +37,10 @@ export default function PostThread({ post, currentUser, depth = 0, onReply, onEd
 
   const isAuthor = currentUser?.id === post.author_id;
   const indentLevel = Math.min(depth, MAX_INDENT_DEPTH);
+  const authorRole = getAuthorRole(post, trackPosterId, moderatorIds);
+
+  const canPin = (userRole === 'artist' || userRole === 'admin') && !post.is_removed;
+  const canRemove = (userRole === 'artist' || userRole === 'moderator' || userRole === 'admin') && !isAuthor && !post.is_removed;
 
   async function handleReply(e) {
     e.preventDefault();
@@ -63,7 +82,7 @@ export default function PostThread({ post, currentUser, depth = 0, onReply, onEd
   const userVote = post.user_vote || 0;
 
   function VoteBtn({ value, activeClass, icon: Icon, label }) {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || isAuthor) {
       return <span className="post-vote-btn" aria-hidden="true"><Icon size={14} /></span>;
     }
     return (
@@ -86,7 +105,10 @@ export default function PostThread({ post, currentUser, depth = 0, onReply, onEd
         <div className="post-header">
           <span className="post-author">
             {post.is_pinned && <HiBookmark size={14} className="post-pin-icon" aria-label="Pinned" />}
-            {post.author_display_name}
+            <Link to={`/users/${post.author_id}`} className="post-author-link">
+              {post.author_display_name}
+            </Link>
+            <RoleBadge role={authorRole} />
           </span>
           <span className="post-time">{formatRelativeTime(post.created_at)}</span>
           {post.updated_at && !post.is_removed && (
@@ -126,6 +148,13 @@ export default function PostThread({ post, currentUser, depth = 0, onReply, onEd
               {score !== 0 && <span className="post-vote-score">{score}</span>}
               <VoteBtn value={-1} activeClass="voted-down" icon={HiHandThumbDown} label="Downvote" />
             </div>
+            {canPin && (
+              <PinButton
+                isPinned={post.is_pinned}
+                disabled={pinnedCount >= 3 && !post.is_pinned}
+                onClick={() => onPin(post.id, !post.is_pinned)}
+              />
+            )}
             {currentUser && (
               <button className="post-action" onClick={() => setReplyOpen(!replyOpen)}>
                 <HiChatBubbleLeft size={14} />
@@ -153,6 +182,9 @@ export default function PostThread({ post, currentUser, depth = 0, onReply, onEd
                   </button>
                 )}
               </>
+            )}
+            {canRemove && (
+              <RemovePostButton onRemove={() => onRemove(post.id)} />
             )}
           </div>
         )}
@@ -194,6 +226,13 @@ export default function PostThread({ post, currentUser, depth = 0, onReply, onEd
               onDelete={onDelete}
               onVotePost={onVotePost}
               isAuthenticated={isAuthenticated}
+              userRole={userRole}
+              trackId={trackId}
+              trackPosterId={trackPosterId}
+              moderatorIds={moderatorIds}
+              pinnedCount={pinnedCount}
+              onPin={onPin}
+              onRemove={onRemove}
             />
           ))}
         </div>

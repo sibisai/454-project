@@ -26,6 +26,8 @@ def register(body: RegisterRequest, db: Session = Depends(get_db)):
         db.rollback()
         if "ix_users_email" in str(exc.orig):
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+        if "ix_users_display_name" in str(exc.orig):
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Display name already taken")
         raise
     db.refresh(user)
     return user
