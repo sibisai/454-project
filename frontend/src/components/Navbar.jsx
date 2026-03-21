@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import './Navbar.css';
 
 export default function Navbar() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, restoring, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -37,7 +37,7 @@ export default function Navbar() {
       </div>
 
       <div className="navbar-right">
-        {isAuthenticated ? (
+        {restoring ? null : isAuthenticated ? (
           <div className="navbar-user">
             <span className={`badge badge-${user.global_role}`}>
               {user.global_role}

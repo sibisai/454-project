@@ -9,11 +9,8 @@ import TrackSubmit from './pages/TrackSubmit';
 import TrackDetail from './pages/TrackDetail';
 import AdminPanel from './pages/AdminPanel';
 import UserProfile from './pages/UserProfile';
+import Dashboard from './pages/Dashboard';
 import './pages/auth.css';
-
-function Placeholder({ label }) {
-  return <div className="error-page"><p className="error-message">{label}</p></div>;
-}
 
 function NotFound() {
   return (
@@ -38,7 +35,7 @@ export default function App() {
           <Route path="/tracks/new" element={<ProtectedRoute><TrackSubmit /></ProtectedRoute>} />
           <Route path="/tracks/:id" element={<TrackDetail />} />
           <Route path="/users/:id" element={<UserProfile />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Placeholder label="Dashboard" /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute roles={['admin']}><AdminPanel /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

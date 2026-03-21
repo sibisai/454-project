@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { HiBookmark, HiPencil, HiTrash, HiChatBubbleLeft, HiHandThumbUp, HiHandThumbDown } from 'react-icons/hi2';
+import { HiPencil, HiTrash, HiChatBubbleLeft, HiHandThumbUp, HiHandThumbDown } from 'react-icons/hi2';
+import { BsPinAngleFill } from 'react-icons/bs';
 import { formatRelativeTime } from '../utils/time';
 import RoleBadge from './RoleBadge';
 import PinButton from './PinButton';
@@ -18,7 +19,7 @@ function getAuthorRole(post, trackPosterId, moderatorIds) {
 export default function PostThread({
   post, currentUser, depth = 0,
   onReply, onEdit, onDelete, onVotePost, isAuthenticated,
-  userRole, trackId, trackPosterId, moderatorIds, pinnedCount, onPin, onRemove,
+  userRole, trackPosterId, moderatorIds, pinnedCount, onPin, onRemove,
 }) {
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyContent, setReplyContent] = useState('');
@@ -104,7 +105,7 @@ export default function PostThread({
       <article className={['post', post.is_removed && 'post-removed', post.is_pinned && 'post-pinned', isAuthor && 'post-own'].filter(Boolean).join(' ')}>
         <div className="post-header">
           <span className="post-author">
-            {post.is_pinned && <HiBookmark size={14} className="post-pin-icon" aria-label="Pinned" />}
+            {post.is_pinned && <BsPinAngleFill size={14} className="post-pin-icon" aria-label="Pinned" />}
             <Link to={`/users/${post.author_id}`} className="post-author-link">
               {post.author_display_name}
             </Link>
@@ -232,7 +233,6 @@ export default function PostThread({
               onVotePost={onVotePost}
               isAuthenticated={isAuthenticated}
               userRole={userRole}
-              trackId={trackId}
               trackPosterId={trackPosterId}
               moderatorIds={moderatorIds}
               pinnedCount={pinnedCount}

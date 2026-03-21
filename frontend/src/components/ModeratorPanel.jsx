@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
 
-export default function ModeratorPanel({ trackId }) {
+export default function ModeratorPanel({ trackId, onUpdate }) {
   const [moderators, setModerators] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,6 +59,7 @@ export default function ModeratorPanel({ trackId }) {
     try {
       await api.post(`/tracks/${trackId}/moderators/${userId}`);
       await fetchModerators();
+      onUpdate?.();
       setSearchQuery('');
       setSearchResults([]);
     } catch (err) {
@@ -75,6 +76,7 @@ export default function ModeratorPanel({ trackId }) {
     try {
       await api.delete(`/tracks/${trackId}/moderators/${userId}`);
       await fetchModerators();
+      onUpdate?.();
     } catch (err) {
       const detail = err.response?.data?.detail || 'Failed to remove moderator.';
       setMessage({ text: detail, type: 'error' });
