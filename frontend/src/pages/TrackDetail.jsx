@@ -7,6 +7,7 @@ import { formatRelativeTime } from '../utils/time';
 import { stripArtistSuffix } from '../utils/format';
 import SoundCloudEmbed from '../components/SoundCloudEmbed';
 import PostThread from '../components/PostThread';
+import ModeratorPanel from '../components/ModeratorPanel';
 import './TrackDetail.css';
 
 function TrackDetailSkeleton() {
@@ -28,6 +29,7 @@ export default function TrackDetail() {
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState('');
   const [mutationError, setMutationError] = useState('');
+  const [moderatorIds, setModeratorIds] = useState(new Set());
 
   const [newPost, setNewPost] = useState('');
   const [posting, setPosting] = useState(false);
@@ -49,9 +51,20 @@ export default function TrackDetail() {
     }
   }, [id]);
 
+  const fetchModerators = useCallback(async () => {
+    if (!isAuthenticated) return;
+    try {
+      const { data } = await api.get(`/tracks/${id}/moderators`);
+      setModeratorIds(new Set((data.moderators || []).map((m) => m.user_id)));
+    } catch {
+      // Non-critical — badges just won't show for mods
+    }
+  }, [id, isAuthenticated]);
+
   useEffect(() => {
     fetchTrack();
-  }, [fetchTrack]);
+    fetchModerators();
+  }, [fetchTrack, fetchModerators]);
 
   async function handleNewPost(e) {
     e.preventDefault();
@@ -87,6 +100,17 @@ export default function TrackDetail() {
 
   const handleDelete = (postId) =>
     mutatePost(() => api.delete(`/posts/${postId}`), 'Failed to delete post. Please try again.');
+
+  const handleRemove = (postId) =>
+    mutatePost(() => api.delete(`/posts/${postId}`), 'Failed to remove post. Please try again.');
+
+  async function handlePin(postId, pin) {
+    const method = pin ? 'post' : 'delete';
+    await mutatePost(
+      () => api[method](`/tracks/${id}/pin/${postId}`),
+      `Failed to ${pin ? 'pin' : 'unpin'} post.`
+    );
+  }
 
   async function handleLike() {
     if (!track || !isAuthenticated) return;
@@ -175,6 +199,9 @@ export default function TrackDetail() {
 
   const displayTitle = stripArtistSuffix(track.title, track.artist_name);
   const commentLabel = `${track.post_count} ${track.post_count === 1 ? 'comment' : 'comments'}`;
+  const userRole = track.user_role;
+  const canManageMods = userRole === 'artist' || userRole === 'admin';
+  const pinnedCount = (track.posts || []).filter((p) => p.is_pinned).length;
 
   // Sort: pinned first, then by selected sort mode
   const sortedPosts = [...(track.posts || [])].sort((a, b) => {
@@ -194,7 +221,12 @@ export default function TrackDetail() {
 
       <div className="detail-meta-bar">
         <div className="detail-meta">
-          <span>Posted by {track.poster_display_name}</span>
+          <span>
+            Posted by{' '}
+            <Link to={`/users/${track.posted_by}`} className="post-author-link">
+              {track.poster_display_name}
+            </Link>
+          </span>
           <span aria-hidden="true">&middot;</span>
           <span>{formatRelativeTime(track.created_at)}</span>
           <span aria-hidden="true">&middot;</span>
@@ -216,6 +248,16 @@ export default function TrackDetail() {
           </span>
         ) : null}
       </div>
+
+      {userRole && (
+        <div className={`role-indicator role-indicator-${userRole}`}>
+          {userRole === 'artist' && 'You are the artist on this track'}
+          {userRole === 'moderator' && 'You are a moderator on this track'}
+          {userRole === 'admin' && 'You are an admin'}
+        </div>
+      )}
+
+      {canManageMods && <ModeratorPanel trackId={id} />}
 
       <section className="detail-discussion" aria-label="Discussion">
         <div className="discussion-header">
@@ -287,9 +329,16 @@ export default function TrackDetail() {
                 key={post.id}
                 post={post}
                 currentUser={user}
+                userRole={userRole}
+                trackId={id}
+                trackPosterId={track.posted_by}
+                moderatorIds={moderatorIds}
+                pinnedCount={pinnedCount}
                 onReply={handleReply}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onPin={handlePin}
+                onRemove={handleRemove}
                 onVotePost={handleVotePost}
                 isAuthenticated={isAuthenticated}
               />
