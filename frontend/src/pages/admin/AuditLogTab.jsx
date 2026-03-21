@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { formatRelativeTime } from '../../utils/time';
 import { humanizeAction, ACTION_COLORS, ALL_ACTIONS } from './utils';
+import UserHoverCard from '../../components/UserHoverCard';
 
 const PER_PAGE = 20;
 
@@ -107,7 +108,9 @@ export default function AuditLogTab() {
                   style={{ backgroundColor: ACTION_COLORS[entry.action] || '#94A3B8' }}
                 />
                 <div className="admin-audit-body">
-                  <Link to={`/users/${entry.actor_id}`} className="admin-audit-actor post-author-link">{entry.actor_display_name}</Link>
+                  <UserHoverCard userId={entry.actor_id}>
+                    <Link to={`/users/${entry.actor_id}`} className="admin-audit-actor post-author-link">{entry.actor_display_name}</Link>
+                  </UserHoverCard>
                   {' '}
                   <span className="admin-audit-action">{humanizeAction(entry.action)}</span>
                 </div>

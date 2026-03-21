@@ -12,6 +12,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import { formatRelativeTime } from '../utils/time';
+import Skeleton from '../components/Skeleton';
 import './UserProfile.css';
 
 const TABS = [
@@ -106,8 +107,17 @@ export default function UserProfile() {
     return (
       <div className="profile-container">
         <div className="profile-header-skeleton">
-          <div className="skeleton-line" style={{ width: '40%', height: 28 }} />
-          <div className="skeleton-line" style={{ width: '25%', height: 16 }} />
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)' }}>
+            <Skeleton variant="circle" width={56} height={56} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+              <Skeleton width="40%" height={28} />
+              <Skeleton width="25%" height={16} />
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 'var(--space-6)', marginTop: 'var(--space-4)' }}>
+            <Skeleton width={80} height={20} />
+            <Skeleton width={80} height={20} />
+          </div>
         </div>
       </div>
     );

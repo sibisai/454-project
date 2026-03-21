@@ -217,25 +217,11 @@
   overflow: hidden;
 }
 
-.skeleton-embed {
-  height: var(--sc-player-height);
-  background: var(--color-surface-hover);
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
 .skeleton-meta {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
-}
-
-.skeleton-line:nth-child(1) {
-  width: 50%;
-}
-
-.skeleton-line:nth-child(2) {
-  width: 75%;
 }
 
 /* Hero section (unauthenticated visitors) */
@@ -282,8 +268,8 @@
   margin-top: var(--space-2);
 }
 
-/* Mobile breakpoints */
-@media (max-width: 600px) {
+/* ── 768px tablet breakpoint ── */
+@media (max-width: 768px) {
   .home-header {
     flex-direction: column;
     align-items: stretch;
@@ -293,7 +279,10 @@
     width: 100%;
     text-align: center;
   }
+}
 
+/* ── 600px phone breakpoint ── */
+@media (max-width: 600px) {
   .home-hero-title {
     font-size: var(--font-xl);
   }

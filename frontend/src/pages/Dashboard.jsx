@@ -7,6 +7,7 @@ import {
 } from 'react-icons/hi2';
 import api from '../services/api';
 import { formatRelativeTime } from '../utils/time';
+import Skeleton from '../components/Skeleton';
 import './Dashboard.css';
 
 const STAT_CARDS = [
@@ -51,10 +52,22 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="dash-container">
-        <div className="dash-loading">
-          <div className="skeleton-line" style={{ width: '30%', height: 28 }} />
-          <div className="skeleton-line" style={{ width: '60%', height: 16 }} />
-          <div className="skeleton-line" style={{ width: '45%', height: 16 }} />
+        <Skeleton width="30%" height={28} />
+        <div className="dash-stats-grid" style={{ marginTop: 'var(--space-6)' }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="dash-stat-card">
+              <Skeleton variant="rect" width={44} height={44} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+                <Skeleton width="40%" height={24} />
+                <Skeleton width="60%" height={12} />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 'var(--space-8)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          <Skeleton width="25%" height={20} />
+          <Skeleton variant="rect" width="100%" height={56} />
+          <Skeleton variant="rect" width="100%" height={56} />
         </div>
       </div>
     );

@@ -207,18 +207,11 @@
   color: var(--color-text-muted);
 }
 
-.dash-loading {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-8) 0;
-}
+/* ── 768px tablet breakpoint ── */
 
-/* ── Mobile ─────────────────────────────────────────────────────────── */
-
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .dash-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .dash-track-card {
@@ -229,5 +222,13 @@
 
   .dash-track-meta {
     width: 100%;
+  }
+}
+
+/* ── 600px phone breakpoint ── */
+
+@media (max-width: 600px) {
+  .dash-stat-card {
+    padding: var(--space-4);
   }
 }

@@ -4,6 +4,7 @@ import { HiMagnifyingGlass } from 'react-icons/hi2';
 import api from '../../services/api';
 import { useAuth } from '../../hooks/useAuth';
 import { formatRelativeTime } from '../../utils/time';
+import UserHoverCard from '../../components/UserHoverCard';
 
 const PER_PAGE = 20;
 
@@ -145,7 +146,9 @@ export default function UsersTab() {
               return (
                 <div key={u.id} className="admin-user-row">
                   <div className="admin-user-info">
-                    <Link to={`/users/${u.id}`} className="admin-user-name post-author-link">{u.display_name}</Link>
+                    <UserHoverCard userId={u.id}>
+                      <Link to={`/users/${u.id}`} className="admin-user-name post-author-link">{u.display_name}</Link>
+                    </UserHoverCard>
                     <span className="admin-user-email">{u.email}</span>
                   </div>
 

@@ -48,6 +48,17 @@ export default function AdminPanel() {
         ))}
       </div>
 
+      <select
+        className="admin-tabs-select admin-select"
+        value={activeTab}
+        onChange={(e) => setActiveTab(e.target.value)}
+        aria-label="Admin sections"
+      >
+        {TABS.map(({ id, label }) => (
+          <option key={id} value={id}>{label}</option>
+        ))}
+      </select>
+
       <div className="admin-tab-content" role="tabpanel">
         <ActiveComponent />
       </div>

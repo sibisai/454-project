@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
+import UserHoverCard from './UserHoverCard';
 
 export default function ModeratorPanel({ trackId, onUpdate }) {
   const [moderators, setModerators] = useState([]);
@@ -102,7 +103,9 @@ export default function ModeratorPanel({ trackId, onUpdate }) {
           <ul className="mod-list">
             {moderators.map((mod) => (
               <li key={mod.user_id} className="mod-list-item">
-                <Link to={`/users/${mod.user_id}`} className="mod-list-name post-author-link">{mod.display_name}</Link>
+                <UserHoverCard userId={mod.user_id}>
+                  <Link to={`/users/${mod.user_id}`} className="mod-list-name post-author-link">{mod.display_name}</Link>
+                </UserHoverCard>
                 <button
                   className="btn-ghost mod-list-remove"
                   onClick={() => handleRemove(mod.user_id)}

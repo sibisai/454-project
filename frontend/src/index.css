@@ -200,11 +200,23 @@ textarea {
   padding: var(--space-4);
 }
 
+.error-page-icon {
+  color: var(--color-primary);
+  opacity: 0.2;
+}
+
 .error-code {
   font-size: 6rem;
   font-weight: 700;
   color: var(--color-primary);
   line-height: 1;
+}
+
+.error-code-gradient {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .error-message {
@@ -252,16 +264,3 @@ textarea {
   z-index: 1;
 }
 
-/* ── Shared skeleton utilities ── */
-
-@keyframes pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-.skeleton-line {
-  height: 14px;
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-hover);
-  animation: pulse 1.5s ease-in-out infinite;
-}

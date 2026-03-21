@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
+import Skeleton from '../../components/Skeleton';
 
 const LIMIT_OPTIONS = [5, 10, 25];
 
@@ -42,7 +43,18 @@ export default function TopTracksTab() {
       {error && <div className="error-banner" role="alert">{error}</div>}
 
       {loading ? (
-        <div className="admin-loading">Loading top tracks…</div>
+        <div className="admin-leaderboard">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div key={i} className="admin-leaderboard-row">
+              <Skeleton width={40} height={24} />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                <Skeleton width="60%" height={14} />
+                <Skeleton width="30%" height={12} />
+              </div>
+              <Skeleton width={120} height={14} />
+            </div>
+          ))}
+        </div>
       ) : tracks.length === 0 ? (
         <div className="admin-empty">No tracks with discussions yet.</div>
       ) : (

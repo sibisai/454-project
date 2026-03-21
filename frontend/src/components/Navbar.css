@@ -92,20 +92,111 @@
   color: var(--color-danger);
 }
 
-@media (max-width: 600px) {
-  .navbar {
-    padding: var(--space-3);
-  }
+/* ── Hamburger button (hidden above 768px) ── */
 
-  .navbar-left {
-    gap: var(--space-3);
+.navbar-hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--color-text);
+  padding: var(--space-2);
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ── Mobile slide-down menu ── */
+
+.navbar-mobile-menu {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  flex-direction: column;
+  padding: var(--space-4);
+  gap: var(--space-1);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease-out, padding 300ms ease-out;
+}
+
+.navbar-mobile-menu.open {
+  max-height: 400px;
+  padding: var(--space-4);
+}
+
+.navbar-mobile-menu .navbar-link {
+  display: flex;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  min-height: 44px;
+  align-items: center;
+}
+
+.navbar-mobile-menu .navbar-link:hover {
+  background: var(--color-surface-hover);
+}
+
+.navbar-mobile-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-2) 0;
+}
+
+.navbar-mobile-logout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--font-base);
+  min-height: 44px;
+  width: 100%;
+  text-align: left;
+}
+
+.navbar-mobile-logout:hover {
+  color: var(--color-danger);
+  background: var(--color-surface-hover);
+}
+
+/* ── 768px tablet breakpoint ── */
+
+@media (max-width: 768px) {
+  .navbar-links {
+    display: none;
   }
 
   .navbar-right {
-    gap: var(--space-2);
+    display: none;
   }
 
-  .navbar-display-name {
-    display: none;
+  .navbar-hamburger {
+    display: flex;
+  }
+
+  .navbar-mobile-menu {
+    display: flex;
+  }
+
+  .navbar-mobile-menu:not(.open) {
+    padding: 0 var(--space-4);
+  }
+}
+
+/* ── 600px phone breakpoint ── */
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: var(--space-3);
   }
 }

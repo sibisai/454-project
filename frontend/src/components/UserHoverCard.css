@@ -1,0 +1,108 @@
+/* ── Hover Card Trigger ────────────────────────────────────────────── */
+
+.hover-card-trigger {
+  position: relative;
+  display: inline-flex;
+}
+
+/* ── Hover Card Popup ─────────────────────────────────────────────── */
+
+.hover-card {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  z-index: 200;
+  min-width: 240px;
+  max-width: 300px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(4px);
+  animation: hover-card-in 150ms ease-out forwards;
+}
+
+.hover-card--above {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.hover-card--right {
+  left: auto;
+  right: 0;
+}
+
+.hover-card--out {
+  animation: hover-card-out 100ms ease-in forwards;
+}
+
+@keyframes hover-card-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hover-card-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hover-card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .hover-card--out {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ── Card Content ─────────────────────────────────────────────────── */
+
+.hover-card-name {
+  font-size: var(--font-base);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+.hover-card-joined {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.hover-card-stats {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.hover-card-stat {
+  font-size: var(--font-xs);
+  color: var(--color-text-muted);
+}
+
+.hover-card-stat strong {
+  color: var(--color-text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  margin-right: 2px;
+}
+
+/* ── Loading skeleton inside hover card ── */
+
+.hover-card-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

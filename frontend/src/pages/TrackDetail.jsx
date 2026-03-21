@@ -8,14 +8,22 @@ import { stripArtistSuffix } from '../utils/format';
 import SoundCloudEmbed from '../components/SoundCloudEmbed';
 import PostThread from '../components/PostThread';
 import ModeratorPanel from '../components/ModeratorPanel';
+import Skeleton from '../components/Skeleton';
+import ShareButton from '../components/ShareButton';
+import UserHoverCard from '../components/UserHoverCard';
 import './TrackDetail.css';
 
 function TrackDetailSkeleton() {
   return (
     <div className="detail-container">
-      <div className="skeleton-embed-lg" />
+      <Skeleton variant="rect" height={166} width="100%" />
       <div className="skeleton-meta-bar">
-        <div className="skeleton-line" style={{ width: '60%' }} />
+        <Skeleton width="60%" height={16} />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
+        <Skeleton width="30%" height={20} />
+        <Skeleton width="100%" height={60} variant="rect" />
+        <Skeleton width="100%" height={60} variant="rect" />
       </div>
     </div>
   );
@@ -193,7 +201,6 @@ export default function TrackDetail() {
   const posts = track.posts || [];
   const pinnedCount = posts.filter((p) => p.is_pinned).length;
 
-  // Sort: pinned first, then by selected sort mode
   const sortedPosts = [...posts].sort((a, b) => {
     if (a.is_pinned && !b.is_pinned) return -1;
     if (!a.is_pinned && b.is_pinned) return 1;
@@ -213,30 +220,35 @@ export default function TrackDetail() {
         <div className="detail-meta">
           <span>
             Posted by{' '}
-            <Link to={`/users/${track.posted_by}`} className="post-author-link">
-              {track.poster_display_name}
-            </Link>
+            <UserHoverCard userId={track.posted_by}>
+              <Link to={`/users/${track.posted_by}`} className="post-author-link">
+                {track.poster_display_name}
+              </Link>
+            </UserHoverCard>
           </span>
           <span aria-hidden="true">&middot;</span>
           <span>{formatRelativeTime(track.created_at)}</span>
           <span aria-hidden="true">&middot;</span>
           <span>{commentLabel}</span>
         </div>
-        {isAuthenticated ? (
-          <button
-            className={`detail-like-btn${track.user_has_liked ? ' liked' : ''}`}
-            onClick={handleLike}
-            aria-label={track.user_has_liked ? 'Unlike track' : 'Like track'}
-          >
-            {track.user_has_liked ? <HiHeart size={18} /> : <HiOutlineHeart size={18} />}
-            <span>{track.like_count}</span>
-          </button>
-        ) : track.like_count > 0 ? (
-          <span className="detail-like-count">
-            <HiOutlineHeart size={16} />
-            {track.like_count}
-          </span>
-        ) : null}
+        <div className="detail-actions">
+          <ShareButton url={`${window.location.origin}/tracks/${id}`} variant="button" />
+          {isAuthenticated ? (
+            <button
+              className={`detail-like-btn${track.user_has_liked ? ' liked' : ''}`}
+              onClick={handleLike}
+              aria-label={track.user_has_liked ? 'Unlike track' : 'Like track'}
+            >
+              {track.user_has_liked ? <HiHeart size={18} /> : <HiOutlineHeart size={18} />}
+              <span>{track.like_count}</span>
+            </button>
+          ) : track.like_count > 0 ? (
+            <span className="detail-like-count">
+              <HiOutlineHeart size={16} />
+              {track.like_count}
+            </span>
+          ) : null}
+        </div>
       </div>
 
       {userRole && (

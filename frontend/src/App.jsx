@@ -1,4 +1,5 @@
 import { Routes, Route, Link } from 'react-router-dom';
+import { HiMusicalNote } from 'react-icons/hi2';
 import { AuthProvider } from './hooks/useAuth';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -16,9 +17,12 @@ import './pages/auth.css';
 function NotFound() {
   return (
     <div className="error-page">
-      <h1 className="error-code">404</h1>
+      <HiMusicalNote size={64} className="error-page-icon" />
+      <h1 className="error-code error-code-gradient">404</h1>
       <p className="error-message">Page Not Found</p>
-      <p className="error-description">The page you're looking for doesn't exist.</p>
+      <p className="error-description">
+        The page you're looking for doesn't exist or has been moved.
+      </p>
       <Link to="/" className="error-link">Back to Home</Link>
     </div>
   );

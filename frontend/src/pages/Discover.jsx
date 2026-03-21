@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import { formatRelativeTime } from '../utils/time';
+import Skeleton from '../components/Skeleton';
 import './Discover.css';
 
 function RankItem({ track, rank }) {
@@ -64,18 +65,18 @@ export default function Discover() {
   if (loading) {
     return (
       <div className="disc-container">
-        <div className="skeleton-line" style={{ width: '40%', height: 32, marginBottom: 8 }} />
-        <div className="skeleton-line" style={{ width: '55%', height: 16, marginBottom: 32 }} />
-        <div className="disc-hero-card" style={{ pointerEvents: 'none' }}>
-          <div className="disc-hero-art skeleton-pulse" />
+        <Skeleton width="40%" height={32} />
+        <Skeleton width="55%" height={16} className="disc-skeleton-subtitle" />
+        <div className="disc-hero-card" style={{ pointerEvents: 'none', marginTop: 'var(--space-8)' }}>
+          <Skeleton variant="rect" width={120} height={120} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div className="skeleton-line" style={{ width: '20%', height: 24 }} />
-            <div className="skeleton-line" style={{ width: '70%', height: 18 }} />
-            <div className="skeleton-line" style={{ width: '40%', height: 14 }} />
+            <Skeleton width="20%" height={24} />
+            <Skeleton width="70%" height={18} />
+            <Skeleton width="40%" height={14} />
           </div>
         </div>
-        {[1, 2, 3].map(i => (
-          <div key={i} className="skeleton-line" style={{ width: '100%', height: 48, marginBottom: 8 }} />
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} variant="rect" width="100%" height={48} className="disc-skeleton-row" />
         ))}
       </div>
     );

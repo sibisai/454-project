@@ -3,6 +3,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 import api from '../../services/api';
+import Skeleton from '../../components/Skeleton';
 
 const DAYS_OPTIONS = [7, 14, 30, 60, 90];
 
@@ -67,7 +68,14 @@ export default function AnalyticsTab() {
       {error && <div className="error-banner" role="alert">{error}</div>}
 
       {loading ? (
-        <div className="admin-loading">Loading analytics…</div>
+        <div className="admin-charts-grid">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="admin-chart-card">
+              <Skeleton width="40%" height={16} />
+              <Skeleton variant="rect" width="100%" height={250} className="disc-skeleton-row" />
+            </div>
+          ))}
+        </div>
       ) : !data ? (
         <div className="admin-empty">No data available.</div>
       ) : (

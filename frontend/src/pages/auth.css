@@ -152,3 +152,12 @@
 .auth-footer a:hover {
   color: var(--color-primary-hover);
 }
+
+/* ── 768px tablet breakpoint ── */
+
+@media (max-width: 768px) {
+  .auth-card {
+    max-width: none;
+    padding: var(--space-6) var(--space-4);
+  }
+}

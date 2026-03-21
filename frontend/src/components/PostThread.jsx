@@ -6,6 +6,7 @@ import { formatRelativeTime } from '../utils/time';
 import RoleBadge from './RoleBadge';
 import PinButton from './PinButton';
 import RemovePostButton from './RemovePostButton';
+import UserHoverCard from './UserHoverCard';
 
 const MAX_INDENT_DEPTH = 3;
 
@@ -106,9 +107,11 @@ export default function PostThread({
         <div className="post-header">
           <span className="post-author">
             {post.is_pinned && <BsPinAngleFill size={14} className="post-pin-icon" aria-label="Pinned" />}
-            <Link to={`/users/${post.author_id}`} className="post-author-link">
-              {post.author_display_name}
-            </Link>
+            <UserHoverCard userId={post.author_id}>
+              <Link to={`/users/${post.author_id}`} className="post-author-link">
+                {post.author_display_name}
+              </Link>
+            </UserHoverCard>
             <RoleBadge role={authorRole} />
           </span>
           <span className="post-time">{formatRelativeTime(post.created_at)}</span>
