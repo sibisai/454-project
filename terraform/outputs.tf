@@ -116,3 +116,25 @@ output "target_group_arn" {
   description = "ARN of the backend target group"
   value       = aws_lb_target_group.backend.arn
 }
+
+#--- Frontend / CloudFront ---
+
+output "frontend_bucket_name" {
+  description = "Name of the S3 bucket for React frontend assets"
+  value       = aws_s3_bucket.frontend.id
+}
+
+output "frontend_bucket_arn" {
+  description = "ARN of the S3 bucket for React frontend assets"
+  value       = aws_s3_bucket.frontend.arn
+}
+
+output "cloudfront_distribution_id" {
+  description = "ID of the CloudFront distribution"
+  value       = aws_cloudfront_distribution.frontend.id
+}
+
+output "cloudfront_domain_name" {
+  description = "Domain name of the CloudFront distribution (user-facing URL)"
+  value       = aws_cloudfront_distribution.frontend.domain_name
+}
