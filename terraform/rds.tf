@@ -52,7 +52,7 @@ resource "aws_db_instance" "main" {
 
   # Backup and lifecycle — 7-day retention for point-in-time recovery
   backup_retention_period = 7
-  skip_final_snapshot     = true # Dev environment only
+  skip_final_snapshot     = true  # Dev environment only
   deletion_protection     = false # Dev environment only
   apply_immediately       = true
 

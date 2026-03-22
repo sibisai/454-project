@@ -7,3 +7,4 @@ environment  = "dev"
 
 db_username = "your_db_admin_user"
 db_password = "your_strong_password_here"
+jwt_secret  = "change-me-generate-a-random-64-char-string"
