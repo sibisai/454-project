@@ -76,7 +76,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_all_out" {
 
 resource "aws_security_group" "backend" {
   name        = "${var.project_name}-backend-sg"
-  description = "Backend accepts traffic only from ALB — no direct public access"
+  description = "Backend accepts traffic only from ALB - no direct public access"
   vpc_id      = aws_vpc.main.id
 
   tags = {
@@ -126,7 +126,7 @@ resource "aws_vpc_security_group_egress_rule" "backend_all_out" {
 
 resource "aws_security_group" "rds" {
   name        = "${var.project_name}-rds-sg"
-  description = "Database accepts connections only from backend containers — defense in depth"
+  description = "Database accepts connections only from backend containers - defense in depth"
   vpc_id      = aws_vpc.main.id
 
   tags = {
