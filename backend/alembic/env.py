@@ -9,6 +9,7 @@ from sqlalchemy import engine_from_config, pool
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
+from app.database import DATABASE_URL  # noqa: E402 — reuse connection-string logic
 from app.models import Base  # noqa: E402, F401 — triggers all model imports
 
 config = context.config
@@ -17,10 +18,6 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 target_metadata = Base.metadata
-
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL environment variable is not set")
 
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
