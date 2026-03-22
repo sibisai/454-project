@@ -18,10 +18,9 @@ All project docs are in the `docs/` folder:
 
 - **REQUIREMENTS.md** — Full functional, non-functional, and security requirements
 - **TASKS.md** — Task list broken into phases with assignments per team member
-- **SoundCloud_Project_Roadmap.docx** — Overall roadmap with timeline, architecture, and RBAC model (In shared google drive)
-- **design-document.md** — Design document (in progress)
-- **compliance-checklist.md** — NIST SP 800-53 control mapping (in progress)
-- **security-assessment.md** — Threat analysis and mitigations (in progress)
+- **design-document.md** — Design document (placeholder)
+- **compliance-checklist.md** — NIST SP 800-53 control mapping (placeholder)
+- **security-assessment.md** — Threat analysis and mitigations (placeholder)
 
 ## Local Development Setup
 
@@ -33,11 +32,10 @@ All project docs are in the `docs/` folder:
 
 1. Clone the repo: `git clone <your-repo-url>`
 2. `cd 454-project`
-3. Copy `.env.example` to `.env` (no changes needed for local dev)
-4. `docker compose up --build`
-5. Wait until all 3 services are running (you'll see "Application startup complete" and "VITE ready")
-6. Frontend: http://localhost:3000
-7. Backend health check: http://localhost:8000/api/health
+3. `docker compose up --build`
+4. Wait until all 3 services are running (you'll see "Application startup complete" and "VITE ready")
+5. Frontend: http://localhost:3000
+6. Backend health check: http://localhost:8000/api/health
 
 To stop: `docker compose down`
 
@@ -47,17 +45,10 @@ All AWS resources are defined in Terraform under the `terraform/` directory. See
 
 ## Team
 
-| Name    | Role                 | Branch                  |
-| ------- | -------------------- | ----------------------- |
-| Sibi    | Infra Lead           | `feat/infra`            |
-| Shyan   | Backend: Auth & RBAC | `feat/auth`             |
-| Alyaan  | Backend: API & Data  | `feat/tracks-and-posts` |
-| Dhuha   | Frontend             | `feat/frontend-core`    |
-| Anthony | Security & Docs      | `feat/security-docs`    |
-
-### Workflow
-
-1. Work on your role's branch only
-2. Check `docs/TASKS.md` for role specific tasks
-3. PR into main when your work is ready — do not push to main directly
-4. All PRs require one approval before merging
+| Name    | Role                 |
+| ------- | -------------------- |
+| Sibi    | Infra Lead           |
+| Shyan   | Backend: Auth & RBAC |
+| Alyaan  | Backend: API & Data  |
+| Dhuha   | Frontend             |
+| Anthony | Security & Docs      |

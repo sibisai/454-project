@@ -30,28 +30,28 @@
 
 ### Backend: Auth & RBAC (Shyan)
 
-- [ ] User model (SQLAlchemy)
-- [ ] `POST /api/auth/register` — validate input, hash with bcrypt, store user
-- [ ] `POST /api/auth/login` — verify credentials, return JWT
-- [ ] JWT middleware — decode token, attach user to request
-- [ ] `GET /api/auth/me` — return current user from token
-- [ ] Verify: can register, login, and hit a protected test endpoint
+- [x] User model (SQLAlchemy)
+- [x] `POST /api/auth/register` — validate input, hash with bcrypt, store user
+- [x] `POST /api/auth/login` — verify credentials, return JWT
+- [x] JWT middleware — decode token, attach user to request
+- [x] `GET /api/auth/me` — return current user from token
+- [x] Verify: can register, login, and hit a protected test endpoint
 
 ### Backend: API & Data (Alyaan)
 
-- [ ] Full DB schema in SQLAlchemy models (users, tracks, posts, track_moderators, audit_log)
-- [ ] Alembic setup + initial migration
-- [ ] oEmbed service: fetch metadata from `https://soundcloud.com/oembed?format=json&url=`
-- [ ] URL validation (must be a valid soundcloud.com URL)
-- [ ] Verify: schema deployed to local PostgreSQL, oEmbed returns track data
+- [x] Full DB schema in SQLAlchemy models (users, tracks, posts, track_moderators, audit_log)
+- [x] Alembic setup + initial migration
+- [x] oEmbed service: fetch metadata from `https://soundcloud.com/oembed?format=json&url=`
+- [x] URL validation (must be a valid soundcloud.com URL)
+- [x] Verify: schema deployed to local PostgreSQL, oEmbed returns track data
 
 ### Frontend (Dhuha)
 
-- [ ] Routing setup (React Router): home, login, register, track detail
-- [ ] Login page — form, call `/api/auth/login`, store JWT
-- [ ] Register page — form, call `/api/auth/register`
-- [ ] Basic layout: nav bar with login/logout state
-- [ ] Verify: can log in and see authenticated state in UI
+- [x] Routing setup (React Router): home, login, register, track detail
+- [x] Login page — form, call `/api/auth/login`, store JWT
+- [x] Register page — form, call `/api/auth/register`
+- [x] Basic layout: nav bar with login/logout state
+- [x] Verify: can log in and see authenticated state in UI
 
 ### Security & Docs (Anthony)
 
@@ -74,31 +74,31 @@
 
 ### Backend: Auth & RBAC
 
-- [ ] Role-based permission middleware (checks global_role + track-specific roles)
-- [ ] Permission dependency: `require_role("admin")`, `require_track_role(track_id, "moderator")`
-- [ ] `GET /api/admin/users` — list users (admin only)
-- [ ] `PUT /api/admin/users/:id/role` — change global role (admin only)
-- [ ] Verify: non-admin gets 403 on admin endpoints
+- [x] Role-based permission middleware (checks global_role + track-specific roles)
+- [x] Permission dependency: `require_role("admin")`, `require_track_role(track_id, "moderator")`
+- [x] `GET /api/admin/users` — list users (admin only)
+- [x] `PUT /api/admin/users/:id/role` — change global role (admin only)
+- [x] Verify: non-admin gets 403 on admin endpoints
 
 ### Backend: API & Data
 
-- [ ] `POST /api/tracks` — submit URL, fetch oEmbed, auto-assign Artist role to poster
-- [ ] `GET /api/tracks` — list recent tracks (paginated)
-- [ ] `GET /api/tracks/:id` — get track + its discussion posts
-- [ ] `POST /api/tracks/:id/posts` — create top-level post
-- [ ] `POST /api/posts/:id/replies` — reply to post
-- [ ] `PUT /api/posts/:id` — edit own post
-- [ ] `DELETE /api/posts/:id` — delete own post
-- [ ] Verify: full flow works — post track, create thread, reply, edit, delete
+- [x] `POST /api/tracks` — submit URL, fetch oEmbed, auto-assign Artist role to poster
+- [x] `GET /api/tracks` — list recent tracks (paginated)
+- [x] `GET /api/tracks/:id` — get track + its discussion posts
+- [x] `POST /api/tracks/:id/posts` — create top-level post
+- [x] `POST /api/posts/:id/replies` — reply to post
+- [x] `PUT /api/posts/:id` — edit own post
+- [x] `DELETE /api/posts/:id` — delete own post
+- [x] Verify: full flow works — post track, create thread, reply, edit, delete
 
 ### Frontend
 
-- [ ] Home page: list of recent tracks with artwork + title + artist
-- [ ] Track submission page: URL input, preview oEmbed data before posting
-- [ ] Track detail page: embedded SoundCloud player + discussion thread
-- [ ] Threaded reply UI (nested comments, 2–3 levels deep)
-- [ ] Edit/delete buttons on own posts
-- [ ] Verify: full track → discussion flow working end-to-end in browser
+- [x] Home page: list of recent tracks with artwork + title + artist
+- [x] Track submission page: URL input, preview oEmbed data before posting
+- [x] Track detail page: embedded SoundCloud player + discussion thread
+- [x] Threaded reply UI (nested comments, 2–3 levels deep)
+- [x] Edit/delete buttons on own posts
+- [x] Verify: full track → discussion flow working end-to-end in browser
 
 ### Security & Docs (Anthony)
 
@@ -122,39 +122,39 @@
 
 ### Backend: RBAC
 
-- [ ] Auto-assign Artist role when user posts a track
-- [ ] `POST /api/tracks/:id/moderators/:userId` — artist delegates moderator
-- [ ] `DELETE /api/tracks/:id/moderators/:userId` — artist revokes moderator
-- [ ] Scoped permission check: moderator can only act on their assigned tracks
-- [ ] `POST /api/auth/refresh` — refresh token endpoint
-- [ ] Verify: artist can delegate mod, mod power scoped to that track only
+- [x] Auto-assign Artist role when user posts a track
+- [x] `POST /api/tracks/:id/moderators/:userId` — artist delegates moderator
+- [x] `DELETE /api/tracks/:id/moderators/:userId` — artist revokes moderator
+- [x] Scoped permission check: moderator can only act on their assigned tracks
+- [x] `POST /api/auth/refresh` — refresh token endpoint
+- [x] Verify: artist can delegate mod, mod power scoped to that track only
 
 ### Backend: Moderation + Admin
 
-- [ ] `DELETE /api/mod/posts/:id` — moderator/admin removes post (soft delete)
-- [ ] `POST /api/admin/users/:id/ban` — ban user (admin only)
-- [ ] `DELETE /api/admin/users/:id/ban` — unban user (admin only)
-- [ ] `POST /api/tracks/:id/pin/:postId` — pin post (artist only)
-- [ ] `DELETE /api/tracks/:id/pin/:postId` — unpin post (artist only)
-- [ ] Audit log: record all mod/admin actions to audit_log table
-- [ ] `GET /api/admin/audit-log` — filterable audit log (admin only)
-- [ ] Rate limiting on `/api/auth/login` (5/min per IP)
-- [ ] Verify: all mod actions logged, rate limiting active
+- [x] `DELETE /api/mod/posts/:id` — moderator/admin removes post (soft delete)
+- [x] `POST /api/admin/users/:id/ban` — ban user (admin only)
+- [x] `DELETE /api/admin/users/:id/ban` — unban user (admin only)
+- [x] `POST /api/tracks/:id/pin/:postId` — pin post (artist only)
+- [x] `DELETE /api/tracks/:id/pin/:postId` — unpin post (artist only)
+- [x] Audit log: record all mod/admin actions to audit_log table
+- [x] `GET /api/admin/audit-log` — filterable audit log (admin only)
+- [x] Rate limiting on `/api/auth/login` (5/min per IP)
+- [x] Verify: all mod actions logged, rate limiting active
 
 ### Frontend: Role-Based UI
 
-- [ ] Artist tools on track detail: pin button, "manage moderators" panel
-- [ ] Moderator tools: "remove post" button visible only on assigned tracks
-- [ ] Admin panel: user list, role change dropdown, ban/unban buttons
-- [ ] Admin audit log viewer with action type and date filters
-- [ ] Conditional UI: only show tools the user's role allows
-- [ ] Verify: each role sees only their permitted actions
+- [x] Artist tools on track detail: pin button, "manage moderators" panel
+- [x] Moderator tools: "remove post" button visible only on assigned tracks
+- [x] Admin panel: user list, role change dropdown, ban/unban buttons
+- [x] Admin audit log viewer with action type and date filters
+- [x] Conditional UI: only show tools the user's role allows
+- [x] Verify: each role sees only their permitted actions
 
 ### Security & Docs (Anthony)
 
 - [ ] Lambda: audit log processor code
 - [ ] Lambda: failed login alerter code
-- [ ] Secure headers middleware for FastAPI (CSP, HSTS, X-Frame-Options)
+- [x] Secure headers middleware for FastAPI (CSP, HSTS, X-Frame-Options)
 - [ ] Continue design document: Sections 5–7
 
 ---
@@ -187,11 +187,11 @@
 
 ### Frontend Polish
 
-- [ ] Error states: invalid URL, network error, unauthorized
-- [ ] Loading states on all async actions
-- [ ] Basic mobile responsiveness
-- [ ] Test all role-specific UI
-- [ ] Verify: no broken UI states
+- [x] Error states: invalid URL, network error, unauthorized
+- [x] Loading states on all async actions
+- [x] Basic mobile responsiveness
+- [x] Test all role-specific UI
+- [x] Verify: no broken UI states
 
 ### Documentation (Anthony)
 
@@ -232,35 +232,47 @@
 ## Repo Structure
 
 ```
-soundcloud-discuss/
+454-project/
 ├── terraform/
 │   ├── main.tf
 │   ├── variables.tf
 │   ├── outputs.tf
+│   ├── terraform.tfvars.example
 │   ├── vpc.tf
+│   ├── security-groups.tf
 │   ├── rds.tf
 │   ├── ecs.tf
 │   ├── s3-cloudfront.tf
 │   ├── lambda.tf
 │   ├── waf.tf
-│   └── iam.tf
+│   ├── iam.tf
+│   └── cloudtrail.tf
 ├── backend/
 │   ├── app/
 │   │   ├── main.py
 │   │   ├── config.py
+│   │   ├── database.py
+│   │   ├── seed_admin.py
 │   │   ├── auth/
 │   │   │   ├── routes.py
+│   │   │   ├── schemas.py
 │   │   │   ├── jwt.py
 │   │   │   └── passwords.py
 │   │   ├── routes/
 │   │   │   ├── tracks.py
 │   │   │   ├── posts.py
 │   │   │   ├── admin.py
-│   │   │   └── moderation.py
+│   │   │   ├── moderation.py
+│   │   │   ├── discover.py
+│   │   │   ├── users.py
+│   │   │   ├── helpers.py
+│   │   │   └── schemas.py
 │   │   ├── models/
+│   │   │   ├── base.py
 │   │   │   ├── user.py
 │   │   │   ├── track.py
 │   │   │   ├── post.py
+│   │   │   ├── like.py
 │   │   │   └── audit.py
 │   │   ├── middleware/
 │   │   │   ├── rbac.py
@@ -270,29 +282,37 @@ soundcloud-discuss/
 │   │       ├── oembed.py
 │   │       └── audit.py
 │   ├── alembic/
+│   ├── alembic.ini
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   └── App.jsx
+│   ├── index.html
+│   ├── vite.config.js
+│   ├── package.json
 │   ├── Dockerfile
-│   └── package.json
+│   └── src/
+│       ├── main.jsx
+│       ├── App.jsx
+│       ├── index.css
+│       ├── components/
+│       ├── pages/
+│       ├── hooks/
+│       ├── services/
+│       └── utils/
 ├── lambda/
 │   ├── audit_processor/
 │   │   └── handler.py
 │   └── security_alert/
 │       └── handler.py
 ├── docs/
+│   ├── REQUIREMENTS.md
+│   ├── TASKS.md
 │   ├── design-document.md
 │   ├── compliance-checklist.md
 │   ├── security-assessment.md
 │   └── screenshots/
 ├── docker-compose.yml
-├── .gitignore
 ├── .env.example
+├── .gitignore
 └── README.md
 ```

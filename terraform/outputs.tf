@@ -1,8 +1,4 @@
-# outputs.tf — Output values
-
-# ──────────────────────────────────────────────
-# Networking
-# ──────────────────────────────────────────────
+#--- Networking ---
 
 output "vpc_id" {
   description = "ID of the VPC"
@@ -19,9 +15,7 @@ output "private_subnet_ids" {
   value       = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 }
 
-# ──────────────────────────────────────────────
-# Security Groups
-# ──────────────────────────────────────────────
+#--- Security Groups ---
 
 output "alb_security_group_id" {
   description = "Security group ID for the ALB"
@@ -38,9 +32,7 @@ output "rds_security_group_id" {
   value       = aws_security_group.rds.id
 }
 
-# ──────────────────────────────────────────────
-# Database
-# ──────────────────────────────────────────────
+#--- Database ---
 
 output "rds_endpoint" {
   description = "Connection endpoint for the RDS PostgreSQL instance"
@@ -53,11 +45,31 @@ output "rds_port" {
   value       = aws_db_instance.main.port
 }
 
-# ──────────────────────────────────────────────
-# Container Registry
-# ──────────────────────────────────────────────
+#--- Container Registry ---
 
 output "ecr_repository_url" {
   description = "URL of the ECR repository for backend images"
   value       = aws_ecr_repository.backend.repository_url
+}
+
+#--- IAM ---
+
+output "ecs_execution_role_arn" {
+  description = "ARN of the ECS task execution role (image pull + log write + secrets)"
+  value       = aws_iam_role.ecs_execution.arn
+}
+
+output "ecs_task_role_arn" {
+  description = "ARN of the ECS task role (app runtime permissions)"
+  value       = aws_iam_role.ecs_task.arn
+}
+
+output "lambda_execution_role_arn" {
+  description = "ARN of the Lambda execution role (logs + SNS alerts)"
+  value       = aws_iam_role.lambda_execution.arn
+}
+
+output "cloudtrail_cloudwatch_role_arn" {
+  description = "ARN of the CloudTrail-to-CloudWatch delivery role"
+  value       = aws_iam_role.cloudtrail_cloudwatch.arn
 }
