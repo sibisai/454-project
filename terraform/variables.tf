@@ -30,6 +30,12 @@ variable "jwt_secret" {
   sensitive   = true
 }
 
+variable "backend_image_tag" {
+  description = "Docker image tag for the backend container"
+  type        = string
+  default     = "latest"
+}
+
 variable "environment" {
   description = "Deployment environment (dev, staging, prod)"
   type        = string

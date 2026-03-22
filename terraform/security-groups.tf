@@ -39,8 +39,8 @@ resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   }
 }
 
-# Port 80 is open only for HTTP → HTTPS redirect; the ALB listener
-# should return a 301, never forward plaintext traffic to the backend.
+# Port 80: forwards plaintext HTTP to backend in dev.
+# TODO: swap listener to 301 redirect once ACM/CloudFront are in place.
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {
   security_group_id = aws_security_group.alb.id
   description       = "HTTP from the internet (redirected to HTTPS by ALB listener)"

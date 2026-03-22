@@ -87,3 +87,32 @@ output "jwt_secret_arn" {
   value       = aws_secretsmanager_secret.jwt_secret.arn
   sensitive   = true
 }
+
+#--- ECS ---
+
+output "ecs_cluster_name" {
+  description = "Name of the ECS Fargate cluster"
+  value       = aws_ecs_cluster.main.name
+}
+
+output "ecs_service_name" {
+  description = "Name of the ECS backend service"
+  value       = aws_ecs_service.backend.name
+}
+
+#--- Load Balancer ---
+
+output "alb_dns_name" {
+  description = "DNS name of the ALB (use this to test the backend)"
+  value       = aws_lb.main.dns_name
+}
+
+output "alb_arn" {
+  description = "ARN of the Application Load Balancer"
+  value       = aws_lb.main.arn
+}
+
+output "target_group_arn" {
+  description = "ARN of the backend target group"
+  value       = aws_lb_target_group.backend.arn
+}
