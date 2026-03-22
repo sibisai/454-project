@@ -30,7 +30,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_managed" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Secrets Manager read — scoped to * until specific secret ARNs are provisioned
+# Scoped to specific secrets — no wildcard access (NIST AC-6)
 resource "aws_iam_role_policy" "ecs_execution_secrets" {
   name = "secrets-read"
   role = aws_iam_role.ecs_execution.id
@@ -38,10 +38,13 @@ resource "aws_iam_role_policy" "ecs_execution_secrets" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Sid      = "ReadSecrets"
-      Effect   = "Allow"
-      Action   = "secretsmanager:GetSecretValue"
-      Resource = "*"
+      Sid    = "ReadSecrets"
+      Effect = "Allow"
+      Action = "secretsmanager:GetSecretValue"
+      Resource = [
+        aws_secretsmanager_secret.db_credentials.arn,
+        aws_secretsmanager_secret.jwt_secret.arn,
+      ]
     }]
   })
 }
@@ -82,10 +85,14 @@ resource "aws_iam_role_policy" "ecs_task_runtime" {
         Resource = "*" # Scoped to specific DB user ARN when RDS IAM auth is configured
       },
       {
-        Sid      = "ReadSecrets"
-        Effect   = "Allow"
-        Action   = "secretsmanager:GetSecretValue"
-        Resource = "*" # Narrowed to specific secret ARNs once provisioned
+        # Scoped to specific secrets — no wildcard access (NIST AC-6)
+        Sid    = "ReadSecrets"
+        Effect = "Allow"
+        Action = "secretsmanager:GetSecretValue"
+        Resource = [
+          aws_secretsmanager_secret.db_credentials.arn,
+          aws_secretsmanager_secret.jwt_secret.arn,
+        ]
       },
       {
         Sid    = "WriteLogs"

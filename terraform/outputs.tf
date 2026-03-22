@@ -73,3 +73,17 @@ output "cloudtrail_cloudwatch_role_arn" {
   description = "ARN of the CloudTrail-to-CloudWatch delivery role"
   value       = aws_iam_role.cloudtrail_cloudwatch.arn
 }
+
+#--- Secrets ---
+
+output "db_credentials_secret_arn" {
+  description = "ARN of the Secrets Manager secret containing DB credentials"
+  value       = aws_secretsmanager_secret.db_credentials.arn
+  sensitive   = true
+}
+
+output "jwt_secret_arn" {
+  description = "ARN of the Secrets Manager secret containing the JWT signing key"
+  value       = aws_secretsmanager_secret.jwt_secret.arn
+  sensitive   = true
+}

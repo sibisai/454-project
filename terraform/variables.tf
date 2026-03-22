@@ -24,6 +24,12 @@ variable "db_password" {
   sensitive   = true
 }
 
+variable "jwt_secret" {
+  description = "Secret key used to sign JWT tokens"
+  type        = string
+  sensitive   = true
+}
+
 variable "environment" {
   description = "Deployment environment (dev, staging, prod)"
   type        = string
