@@ -157,3 +157,15 @@ output "guardduty_detector_id" {
   description = "ID of the GuardDuty threat detection detector"
   value       = aws_guardduty_detector.main.id
 }
+
+#--- Lambda ---
+
+output "audit_processor_lambda_arn" {
+  description = "ARN of the audit processor Lambda function"
+  value       = aws_lambda_function.audit_processor.arn
+}
+
+output "security_alert_lambda_arn" {
+  description = "ARN of the security alert Lambda function"
+  value       = aws_lambda_function.security_alert.arn
+}

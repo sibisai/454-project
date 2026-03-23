@@ -1,8 +1,6 @@
-# cloudtrail.tf — CloudTrail audit logging, S3 log bucket, CloudWatch log groups
+# cloudtrail.tf -- CloudTrail audit logging, S3 log bucket, CloudWatch log groups
 
-# ──────────────────────────────────────────────
-# CloudTrail Logs S3 Bucket
-# ──────────────────────────────────────────────
+#--- CloudTrail Logs S3 Bucket ---
 
 resource "aws_s3_bucket" "cloudtrail_logs" {
   bucket        = "${var.project_name}-cloudtrail-logs-${data.aws_caller_identity.current.account_id}"
@@ -37,7 +35,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail_logs" 
 resource "aws_s3_bucket_policy" "cloudtrail_logs" {
   bucket = aws_s3_bucket.cloudtrail_logs.id
 
-  # Ensure public access block is in place before attaching the policy
   depends_on = [aws_s3_bucket_public_access_block.cloudtrail_logs]
 
   policy = jsonencode({
@@ -70,9 +67,7 @@ resource "aws_s3_bucket_policy" "cloudtrail_logs" {
   })
 }
 
-# ──────────────────────────────────────────────
-# CloudTrail Trail — multi-region API audit logging
-# ──────────────────────────────────────────────
+#--- CloudTrail Trail -- multi-region API audit logging ---
 
 resource "aws_cloudtrail" "main" {
   name                          = "${var.project_name}-trail"
@@ -81,7 +76,9 @@ resource "aws_cloudtrail" "main" {
   enable_log_file_validation    = true
   include_global_service_events = true
 
-  # TODO: wire cloud_watch_logs_group_arn + IAM role to stream events to CloudWatch
+  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
+  cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_cloudwatch.arn
+
   # Wait for bucket policy so CloudTrail can write on first event
   depends_on = [aws_s3_bucket_policy.cloudtrail_logs]
 
@@ -92,9 +89,7 @@ resource "aws_cloudtrail" "main" {
   }
 }
 
-# ──────────────────────────────────────────────
-# CloudWatch Log Groups
-# ──────────────────────────────────────────────
+#--- CloudWatch Log Groups ---
 
 resource "aws_cloudwatch_log_group" "ecs_backend" {
   name              = "/ecs/${var.project_name}/backend"
