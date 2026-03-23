@@ -138,3 +138,34 @@ output "cloudfront_domain_name" {
   description = "Domain name of the CloudFront distribution (user-facing URL)"
   value       = aws_cloudfront_distribution.frontend.domain_name
 }
+
+#--- WAF ---
+
+output "cloudfront_waf_acl_arn" {
+  description = "ARN of the WAF Web ACL attached to CloudFront"
+  value       = aws_wafv2_web_acl.cloudfront.arn
+}
+
+output "alb_waf_acl_arn" {
+  description = "ARN of the WAF Web ACL attached to the ALB"
+  value       = aws_wafv2_web_acl.alb.arn
+}
+
+#--- GuardDuty ---
+
+output "guardduty_detector_id" {
+  description = "ID of the GuardDuty threat detection detector"
+  value       = aws_guardduty_detector.main.id
+}
+
+#--- Lambda ---
+
+output "audit_processor_lambda_arn" {
+  description = "ARN of the audit processor Lambda function"
+  value       = aws_lambda_function.audit_processor.arn
+}
+
+output "security_alert_lambda_arn" {
+  description = "ARN of the security alert Lambda function"
+  value       = aws_lambda_function.security_alert.arn
+}

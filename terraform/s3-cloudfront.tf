@@ -1,8 +1,6 @@
-# s3-cloudfront.tf — S3 bucket for React, CloudFront distribution, OAI
+# s3-cloudfront.tf -- S3 bucket for React, CloudFront distribution, OAI
 
-# ──────────────────────────────────────────────
-# S3 Bucket for React Frontend Assets
-# ──────────────────────────────────────────────
+#--- S3 Bucket for React Frontend Assets ---
 
 resource "aws_s3_bucket" "frontend" {
   bucket        = "${var.project_name}-frontend-${data.aws_caller_identity.current.account_id}"
@@ -34,17 +32,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "frontend" {
   }
 }
 
-# ──────────────────────────────────────────────
-# CloudFront Origin Access Identity
-# ──────────────────────────────────────────────
+#--- CloudFront Origin Access Identity ---
 
 resource "aws_cloudfront_origin_access_identity" "frontend" {
   comment = "OAI for ${var.project_name} frontend S3 bucket"
 }
 
-# ──────────────────────────────────────────────
-# S3 Bucket Policy — CloudFront OAI read-only
-# ──────────────────────────────────────────────
+#--- S3 Bucket Policy -- CloudFront OAI read-only ---
 
 resource "aws_s3_bucket_policy" "frontend" {
   bucket = aws_s3_bucket.frontend.id
@@ -67,16 +61,15 @@ resource "aws_s3_bucket_policy" "frontend" {
   })
 }
 
-# ──────────────────────────────────────────────
-# CloudFront Distribution
-# ──────────────────────────────────────────────
+#--- CloudFront Distribution ---
 
 resource "aws_cloudfront_distribution" "frontend" {
   enabled             = true
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
+  web_acl_id          = aws_wafv2_web_acl.cloudfront.arn
 
-  # Origin 1 — S3 (static frontend assets)
+  # S3 origin (static frontend assets)
   origin {
     domain_name = aws_s3_bucket.frontend.bucket_regional_domain_name
     origin_id   = "s3-frontend"
@@ -86,7 +79,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
-  # Origin 2 — ALB (API backend)
+  # ALB origin (API backend)
   origin {
     domain_name = aws_lb.main.dns_name
     origin_id   = "alb-api"
@@ -99,7 +92,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
-  # Default cache behavior — S3 frontend
+  # Default cache behavior -- S3 frontend
   default_cache_behavior {
     target_origin_id       = "s3-frontend"
     viewer_protocol_policy = "redirect-to-https"
@@ -114,7 +107,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
-  # Ordered cache behavior — API passthrough
+  # API passthrough -- no caching
   ordered_cache_behavior {
     path_pattern           = "/api/*"
     target_origin_id       = "alb-api"
@@ -134,7 +127,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     }
   }
 
-  # SPA routing — serve index.html for 403/404 so React Router handles client routes
+  # SPA routing -- serve index.html for 403/404 so React Router works
   custom_error_response {
     error_code            = 403
     response_code         = 200

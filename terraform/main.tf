@@ -1,4 +1,4 @@
-# main.tf — Terraform configuration and AWS provider setup
+# main.tf -- Terraform configuration and AWS provider setup
 
 terraform {
   required_version = ">= 1.5"
@@ -7,6 +7,10 @@ terraform {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
+    }
+    archive = {
+      source  = "hashicorp/archive"
+      version = "~> 2.0"
     }
   }
 }
