@@ -138,3 +138,15 @@ output "cloudfront_domain_name" {
   description = "Domain name of the CloudFront distribution (user-facing URL)"
   value       = aws_cloudfront_distribution.frontend.domain_name
 }
+
+#--- WAF ---
+
+output "cloudfront_waf_acl_arn" {
+  description = "ARN of the WAF Web ACL attached to CloudFront"
+  value       = aws_wafv2_web_acl.cloudfront.arn
+}
+
+output "alb_waf_acl_arn" {
+  description = "ARN of the WAF Web ACL attached to the ALB"
+  value       = aws_wafv2_web_acl.alb.arn
+}
