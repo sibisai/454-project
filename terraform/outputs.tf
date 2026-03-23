@@ -150,3 +150,10 @@ output "alb_waf_acl_arn" {
   description = "ARN of the WAF Web ACL attached to the ALB"
   value       = aws_wafv2_web_acl.alb.arn
 }
+
+#--- GuardDuty ---
+
+output "guardduty_detector_id" {
+  description = "ID of the GuardDuty threat detection detector"
+  value       = aws_guardduty_detector.main.id
+}
