@@ -1,5 +1,13 @@
-# IAM roles and policies — least-privilege, one role per service.
-# Roles are defined here; attached to services in their respective .tf files.
+# IAM Strategy -- Least Privilege (NIST AC-6)
+#
+# ECS Execution Role: pull ECR images, write CloudWatch logs, read specific secrets
+# ECS Task Role: app runtime only -- connect to RDS, read secrets, write logs
+# Lambda Role: write CloudWatch logs, publish SNS alerts
+# CloudTrail Role: stream events to specific CloudWatch log group
+#
+# All policies use resource-level scoping where possible.
+# All policies use Action: specific and Resource: scoped ARN.
+# Only remaining wildcard: sns:Publish Resource (see TODO -- pending SNS topic creation).
 
 #--- ECS Task Execution Role ---
 # Used by the ECS agent (not app code) to pull images, write logs,
@@ -30,7 +38,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_managed" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-# Scoped to specific secrets — no wildcard access (NIST AC-6)
+# Scoped to specific secrets -- no wildcard access (NIST AC-6)
 resource "aws_iam_role_policy" "ecs_execution_secrets" {
   name = "secrets-read"
   role = aws_iam_role.ecs_execution.id
@@ -82,10 +90,10 @@ resource "aws_iam_role_policy" "ecs_task_runtime" {
         Sid      = "RdsIamAuth"
         Effect   = "Allow"
         Action   = "rds-db:connect"
-        Resource = "*" # Scoped to specific DB user ARN when RDS IAM auth is configured
+        Resource = "arn:aws:rds-db:${var.aws_region}:${data.aws_caller_identity.current.account_id}:dbuser:${aws_db_instance.main.resource_id}/${var.db_username}"
       },
       {
-        # Scoped to specific secrets — no wildcard access (NIST AC-6)
+        # Scoped to specific secrets -- no wildcard access (NIST AC-6)
         Sid    = "ReadSecrets"
         Effect = "Allow"
         Action = "secretsmanager:GetSecretValue"
@@ -147,16 +155,17 @@ resource "aws_iam_role_policy" "lambda_runtime" {
         Resource = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/${var.project_name}-*"
       },
       {
-        Sid      = "PublishAlerts"
-        Effect   = "Allow"
-        Action   = "sns:Publish"
-        Resource = "*" # Scoped to specific SNS topic ARN once created
+        Sid    = "PublishAlerts"
+        Effect = "Allow"
+        Action = "sns:Publish"
+        # TODO: scope to specific SNS topic ARN when created
+        Resource = "*"
       }
     ]
   })
 }
 
-#--- CloudTrail → CloudWatch Role ---
+#--- CloudTrail -- CloudWatch Role ---
 # Lets CloudTrail deliver API audit events to CloudWatch, enabling
 # metric filters and alarms on security-sensitive API calls.
 
