@@ -7,7 +7,7 @@ A secure, cloud-deployed web application for sharing and discussing SoundCloud t
 - **Frontend:** React 18, Vite, React Router, Axios
 - **Backend:** Python 3.11, FastAPI, SQLAlchemy, Alembic
 - **Database:** PostgreSQL 15
-- **Infrastructure:** AWS (ECS Fargate, RDS, S3, CloudFront, Lambda, WAF)
+- **Infrastructure:** AWS (ECS Fargate, RDS, S3, CloudFront, Lambda, WAF, GuardDuty, CloudTrail, CloudWatch, Secrets Manager)
 - **IaC:** Terraform
 - **Containerization:** Docker, Docker Compose
 - **Auth:** JWT (PyJWT), bcrypt
@@ -41,7 +41,16 @@ To stop: `docker compose down`
 
 ## AWS Infrastructure
 
-All AWS resources are defined in Terraform under the `terraform/` directory. See `docs/` for architecture details.
+All AWS resources are defined in Terraform under `terraform/`. Key components:
+
+- **Networking:** VPC with public/private subnets across 2 AZs, NAT gateway, 3-tier security groups
+- **Compute:** ECS Fargate cluster behind an ALB, ECR with image scanning
+- **Database:** RDS PostgreSQL 15 in private subnets, encrypted at rest
+- **Frontend Hosting:** S3 + CloudFront with Origin Access Identity
+- **Security:** WAF on both CloudFront and ALB (OWASP rules, SQLi protection, rate limiting), IAM least-privilege roles
+- **Logging & Monitoring:** CloudTrail (multi-region), CloudWatch Logs (90-day retention), GuardDuty threat detection
+- **Serverless:** Lambda functions for audit processing and security alerts
+- **Secrets:** AWS Secrets Manager for DB credentials and JWT secret
 
 ## Team
 
