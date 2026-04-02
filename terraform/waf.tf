@@ -12,7 +12,7 @@
 
 resource "aws_wafv2_web_acl" "cloudfront" {
   name        = "${var.project_name}-cloudfront-waf"
-  description = "WAF for CloudFront -- managed rules and rate limiting (NIST SI-3)"
+  description = "WAF for CloudFront - managed rules and rate limiting, NIST SI-3"
   scope       = "CLOUDFRONT"
 
   default_action {
@@ -138,7 +138,7 @@ resource "aws_wafv2_web_acl" "cloudfront" {
 
 resource "aws_wafv2_web_acl" "alb" {
   name        = "${var.project_name}-alb-waf"
-  description = "WAF for ALB -- managed rules and rate limiting (NIST SI-3)"
+  description = "WAF for ALB - managed rules and rate limiting, NIST SI-3"
   scope       = "REGIONAL"
 
   default_action {

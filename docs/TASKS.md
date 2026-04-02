@@ -26,7 +26,7 @@
 - [x] Terraform: ECR repository for backend Docker image
 - [x] Terraform: CloudTrail + CloudWatch log groups
 - [x] Terraform: cleanup and validation
-- [ ] Verify: VPC visible in AWS console, RDS accessible from private subnet only
+- [x] Verify: VPC visible in AWS console, RDS accessible from private subnet only
 
 ### Backend: Auth & RBAC (Shyan)
 
@@ -64,13 +64,13 @@
 
 ### Infra (Sibi)
 
-- [ ] Terraform: ECS Fargate cluster + task definition
-- [ ] Terraform: ALB (HTTPS listener, TLS cert via ACM)
-- [ ] Terraform: S3 bucket for React frontend (Block Public Access on)
-- [ ] Terraform: CloudFront distribution (OAI to S3, HTTPS-only)
-- [ ] Backend Dockerfile → push to ECR → deploy to ECS
-- [ ] Frontend build → upload to S3 → invalidate CloudFront
-- [ ] Verify: app reachable via HTTPS through CloudFront/ALB
+- [x] Terraform: ECS Fargate cluster + task definition
+- [x] Terraform: ALB (HTTPS listener, TLS cert via ACM)
+- [x] Terraform: S3 bucket for React frontend (Block Public Access on)
+- [x] Terraform: CloudFront distribution (OAI to S3, HTTPS-only)
+- [x] Backend Dockerfile → push to ECR → deploy to ECS
+- [x] Frontend build → upload to S3 → invalidate CloudFront
+- [x] Verify: app reachable via HTTPS through CloudFront/ALB
 
 ### Backend: Auth & RBAC
 
@@ -111,14 +111,14 @@
 
 ### Infra (Sibi)
 
-- [ ] Terraform: Secrets Manager (DB credentials + JWT secret)
-- [ ] Update ECS task definition to pull secrets from Secrets Manager
-- [ ] Terraform: IAM task role for ECS (least privilege: RDS + Secrets Manager only)
-- [ ] Terraform: GuardDuty enabled
-- [ ] Terraform: WAF rules on CloudFront + ALB (rate limiting, SQLi, XSS)
-- [ ] Terraform: Lambda functions + execution roles (least privilege)
-- [ ] Review all IAM policies — remove any wildcard (`*`) actions
-- [ ] Verify: no hardcoded secrets, IAM policies scoped per service
+- [x] Terraform: Secrets Manager (DB credentials + JWT secret)
+- [x] Update ECS task definition to pull secrets from Secrets Manager
+- [x] Terraform: IAM task role for ECS (least privilege: RDS + Secrets Manager only)
+- [x] Terraform: GuardDuty enabled
+- [x] Terraform: WAF rules on CloudFront + ALB (rate limiting, SQLi, XSS)
+- [x] Terraform: Lambda functions + execution roles (least privilege)
+- [x] Review all IAM policies — remove any wildcard (`*`) actions
+- [x] Verify: no hardcoded secrets, IAM policies scoped per service
 
 ### Backend: RBAC
 
