@@ -61,6 +61,35 @@ resource "aws_s3_bucket_policy" "frontend" {
   })
 }
 
+#--- CloudFront Response Headers Policy (security headers for static assets) ---
+
+resource "aws_cloudfront_response_headers_policy" "security_headers" {
+  name = "${var.project_name}-security-headers"
+
+  security_headers_config {
+    content_security_policy {
+      override                = true
+      content_security_policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://i1.sndcdn.com https://soundcloud.com data:; frame-src https://w.soundcloud.com"
+    }
+
+    strict_transport_security {
+      override                   = true
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      preload                    = true
+    }
+
+    content_type_options {
+      override = true
+    }
+
+    frame_options {
+      override     = true
+      frame_option = "DENY"
+    }
+  }
+}
+
 #--- CloudFront Distribution ---
 
 resource "aws_cloudfront_distribution" "frontend" {
@@ -94,10 +123,11 @@ resource "aws_cloudfront_distribution" "frontend" {
 
   # Default cache behavior -- S3 frontend
   default_cache_behavior {
-    target_origin_id       = "s3-frontend"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
-    cached_methods         = ["GET", "HEAD"]
+    target_origin_id          = "s3-frontend"
+    viewer_protocol_policy    = "redirect-to-https"
+    allowed_methods           = ["GET", "HEAD", "OPTIONS"]
+    cached_methods            = ["GET", "HEAD"]
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.security_headers.id
 
     forwarded_values {
       query_string = false
