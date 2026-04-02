@@ -91,7 +91,7 @@ resource "aws_lambda_permission" "cloudwatch_audit" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.audit_processor.function_name
   principal     = "logs.amazonaws.com"
-  source_arn    = aws_cloudwatch_log_group.cloudtrail.arn
+  source_arn    = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "audit_processor" {
@@ -110,7 +110,7 @@ resource "aws_lambda_permission" "cloudwatch_security" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.security_alert.function_name
   principal     = "logs.amazonaws.com"
-  source_arn    = aws_cloudwatch_log_group.cloudtrail.arn
+  source_arn    = "${aws_cloudwatch_log_group.cloudtrail.arn}:*"
 }
 
 resource "aws_cloudwatch_log_subscription_filter" "security_alert" {
