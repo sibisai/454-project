@@ -178,12 +178,12 @@
 
 ### Vulnerability Scanning
 
-- [ ] Run OWASP ZAP scan against deployed app
-- [ ] Run Trivy scan on backend Docker image
-- [ ] Run pip-audit on Python dependencies
-- [ ] Document minimum 3 findings with severity + remediation
-- [ ] Fix high/critical findings and rescan
-- [ ] Verify: scan reports saved, findings documented
+- [x] Run OWASP ZAP scan against deployed app
+- [x] Run Trivy scan on backend Docker image
+- [x] Run pip-audit on Python dependencies
+- [x] Document minimum 3 findings with severity + remediation
+- [x] Fix high/critical findings and rescan
+- [x] Verify: scan reports saved, findings documented
 
 ### Frontend Polish
 
