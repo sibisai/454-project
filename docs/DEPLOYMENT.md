@@ -1,0 +1,285 @@
+# SoundBoard — AWS Deployment Guide
+
+Step-by-step instructions to deploy SoundBoard from a fresh clone to a running app on AWS.
+
+**Estimated time:** 20-30 minutes
+
+**Estimated cost:** ~$1-2/day while running (remember to destroy after testing)
+
+---
+
+## Prerequisites
+
+Install these tools first:
+
+```bash
+# macOS (via Homebrew)
+brew install terraform awscli docker node
+
+# Verify
+terraform version    # >= 1.5
+aws --version        # >= 2.x
+docker --version     # >= 20.x
+node --version       # >= 18.x
+```
+
+You'll also need:
+- An AWS account with admin access
+- Docker Desktop running (needed for the build step)
+
+---
+
+## Step 1: Configure AWS CLI
+
+```bash
+aws configure
+# AWS Access Key ID: <your key>
+# AWS Secret Access Key: <your secret>
+# Default region: us-east-1
+# Default output format: json
+
+# Verify it works
+aws sts get-caller-identity
+```
+
+---
+
+## Step 2: Clone and set up the repo
+
+```bash
+git clone https://github.com/sibisai/454-project.git
+cd 454-project
+```
+
+---
+
+## Step 3: Create Terraform variables file
+
+```bash
+cd terraform
+
+# Generate a random JWT secret
+openssl rand -hex 32
+# Copy the output - you'll paste it below
+```
+
+Create `terraform.tfvars` (this file is gitignored):
+
+```bash
+cat > terraform.tfvars << 'EOF'
+db_username = "soundboard_admin"
+db_password = "ChangeMe_SecurePass2026"
+jwt_secret  = "PASTE_THE_OPENSSL_OUTPUT_HERE"
+EOF
+```
+
+> **Note:** Don't use special characters like `!` in the password — shells interpret them.
+
+---
+
+## Step 4: Provision AWS infrastructure
+
+```bash
+# Download providers
+terraform init
+
+# Preview what will be created (should show ~60 resources)
+terraform plan
+
+# Create everything - takes 8-12 minutes (RDS and CloudFront are slowest)
+terraform apply
+# Type: yes
+
+# Save the outputs - you'll need them for the next steps
+terraform output
+```
+
+Note down these outputs:
+- `cloudfront_domain_name` — this is your app URL
+- `cloudfront_distribution_id` — needed for cache invalidation
+- `ecr_repository_url` — where the Docker image goes
+
+---
+
+## Step 5: Build and push the backend Docker image
+
+```bash
+cd ..  # back to project root
+
+# Login to ECR (credentials expire after 12 hours)
+aws ecr get-login-password --region us-east-1 | \
+  docker login --username AWS --password-stdin \
+  $(cd terraform && terraform output -raw ecr_repository_url | cut -d'/' -f1)
+
+# Build for linux/amd64 - CRITICAL if you're on Apple Silicon
+docker build --platform linux/amd64 -t soundcloud-discuss-backend ./backend
+
+# Tag for ECR
+ECR_URL=$(cd terraform && terraform output -raw ecr_repository_url)
+docker tag soundcloud-discuss-backend:latest $ECR_URL:latest
+
+# Push to ECR
+docker push $ECR_URL:latest
+
+# Tell ECS to pull the new image and restart the container
+aws ecs update-service \
+  --cluster soundcloud-discuss-cluster \
+  --service soundcloud-discuss-backend-service \
+  --force-new-deployment \
+  --region us-east-1
+```
+
+---
+
+## Step 6: Wait for ECS to start the container
+
+```bash
+# Watch logs until you see "Uvicorn running on http://0.0.0.0:8000"
+# Takes ~2-3 minutes after update-service
+aws logs tail /ecs/soundcloud-discuss/backend \
+  --region us-east-1 --since 5m --follow
+
+# Press Ctrl+C once you see the app is running
+```
+
+---
+
+## Step 7: Build and deploy the frontend
+
+```bash
+cd frontend
+
+# Install deps (first time only)
+npm install
+
+# Build the React app for production
+npm run build
+
+# Upload to S3 - bucket name comes from Terraform outputs
+BUCKET=$(cd ../terraform && terraform output -raw frontend_bucket_name)
+aws s3 sync dist/ s3://$BUCKET --delete
+
+# Invalidate CloudFront cache so users see the new version immediately
+DIST_ID=$(cd ../terraform && terraform output -raw cloudfront_distribution_id)
+aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
+
+cd ..
+```
+
+---
+
+## Step 8: Seed an admin user (optional but recommended)
+
+The app works without this, but you need an admin to access the admin panel.
+
+```bash
+# Get the first running ECS task ID
+TASK_ID=$(aws ecs list-tasks \
+  --cluster soundcloud-discuss-cluster \
+  --service-name soundcloud-discuss-backend-service \
+  --region us-east-1 \
+  --query 'taskArns[0]' --output text | awk -F'/' '{print $NF}')
+
+# Exec into the container and run the seed script
+# Note: enable-execute-command must be true on the service (currently it's not,
+# so register an admin manually through the app's register page, then use AWS
+# console to update the user's global_role to "admin" via RDS query editor,
+# OR just register a normal account and demo with that)
+```
+
+Simpler approach: register a normal account at `/register` and demo with that. Admin features can be shown by manually updating `global_role` in RDS if needed.
+
+---
+
+## Step 9: Test the live app
+
+```bash
+# Get your CloudFront URL
+cd terraform && terraform output cloudfront_domain_name
+# e.g., d3ve6290vu2dj4.cloudfront.net
+```
+
+Open `https://<cloudfront_domain>` in a browser and verify:
+
+1. Home page loads
+2. Register a user
+3. Submit a SoundCloud track (e.g., `https://soundcloud.com/octobersveryown/drake-nokia`)
+4. Open the track — the embedded player should appear
+5. Post a comment, reply, and vote
+
+---
+
+## Step 10: Verify security hardening
+
+```bash
+# Check WAF is blocking SQL injection (should return 403)
+curl -I "https://<your_alb_dns>/api/tracks?sort=1%20OR%201=1"
+
+# Check GuardDuty is running
+aws guardduty list-detectors --region us-east-1
+
+# Check Lambda functions deployed
+aws lambda list-functions --region us-east-1 \
+  --query 'Functions[?starts_with(FunctionName, `soundcloud-discuss`)].FunctionName'
+
+# Check CloudTrail is logging
+aws logs tail /cloudtrail/soundcloud-discuss --region us-east-1 --since 5m
+```
+
+---
+
+## Step 11: Tear down to avoid charges
+
+**IMPORTANT** — AWS charges ~$1-2/day while resources are running. Destroy when done testing.
+
+```bash
+cd terraform
+terraform destroy
+# Type: yes
+# Takes ~5 minutes. CloudFront is the slowest to remove.
+```
+
+---
+
+## Troubleshooting
+
+**Container won't start — "exec format error"**
+
+You built for ARM on an Apple Silicon Mac. Rebuild with `--platform linux/amd64` (see Step 5).
+
+**Container starts but crashes — "DATABASE_URL environment variable is not set"**
+
+The task definition should pull DB credentials from Secrets Manager. Verify: `aws secretsmanager list-secrets --region us-east-1`. If empty, re-run `terraform apply`.
+
+**"relation 'tracks' does not exist"**
+
+Alembic migrations didn't run. Check the Dockerfile CMD — it should be `alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000`.
+
+**terraform apply fails with "Character sets beyond ASCII"**
+
+Security group descriptions had non-ASCII characters (em dashes). Already fixed in the repo — make sure you're on the latest master.
+
+**CloudFront shows old version**
+
+Create a new invalidation: `aws cloudfront create-invalidation --distribution-id <ID> --paths "/*"`
+
+---
+
+## What gets deployed
+
+| Resource | Count | Purpose |
+|---|---|---|
+| VPC + subnets + NAT Gateway | 14 | Network isolation |
+| Security Groups | 3 | ALB → Backend → RDS chain |
+| ECS Fargate cluster + service | 3 | Runs FastAPI backend |
+| ALB + target group + listener | 3 | Routes traffic to ECS |
+| RDS PostgreSQL (encrypted) | 2 | Database |
+| S3 + CloudFront + OAI | 7 | Frontend hosting |
+| IAM roles + policies | 8 | Least privilege access |
+| Secrets Manager | 4 | DB creds + JWT secret |
+| CloudTrail + CloudWatch | 7 | Audit logging |
+| WAF (CloudFront + ALB) | 4 | SQL injection + XSS protection |
+| GuardDuty | 1 | Threat detection |
+| Lambda (audit + alerts) | 4 | Security event processing |
+
+**Total: ~60 resources**
