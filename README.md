@@ -21,6 +21,7 @@ All project docs are in the `docs/` folder:
 - **design-document.md** — Design document (placeholder)
 - **compliance-checklist.md** — NIST SP 800-53 control mapping (placeholder)
 - **security-assessment.md** — Threat analysis and mitigations (placeholder)
+- **DEPLOYMENT.md** — Step-by-step AWS deployment guide (fresh clone to running app)
 
 ## Local Development Setup
 
@@ -38,6 +39,10 @@ All project docs are in the `docs/` folder:
 6. Backend health check: http://localhost:8000/api/health
 
 To stop: `docker compose down`
+
+## AWS Deployment
+
+For full step-by-step instructions to deploy from a fresh clone to a running app on AWS, see **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
 
 ## AWS Infrastructure
 
