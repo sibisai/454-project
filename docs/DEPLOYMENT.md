@@ -74,6 +74,8 @@ EOF
 ```
 
 > **Note:** Don't use special characters like `!` in the password — shells interpret them.
+>
+> **Note:** Don't use `admin`, `postgres`, or other [PostgreSQL reserved words](https://www.postgresql.org/docs/15/sql-keywords-appendix.html) as the `db_username` — RDS will reject them.
 
 ---
 

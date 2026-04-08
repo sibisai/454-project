@@ -5,6 +5,7 @@ aws_region   = "us-east-1"
 project_name = "soundcloud-discuss"
 environment  = "dev"
 
-db_username = "your_db_admin_user"
+# Don't use "admin" or "postgres" — they are reserved words and RDS will reject them
+db_username = "soundboard_admin"
 db_password = "your_strong_password_here"
 jwt_secret  = "change-me-generate-a-random-64-char-string"
