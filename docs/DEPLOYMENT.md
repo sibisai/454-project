@@ -73,7 +73,7 @@ jwt_secret  = "PASTE_THE_OPENSSL_OUTPUT_HERE"
 EOF
 ```
 
-> **Note:** Don't use special characters like `!` in the password — shells interpret them.
+> **Note:** Don't use special characters like `!` in the password — shells interpret them. Password must be at least 8 characters.
 >
 > **Note:** Don't use `admin`, `postgres`, or other [PostgreSQL reserved words](https://www.postgresql.org/docs/15/sql-keywords-appendix.html) as the `db_username` — RDS will reject them.
 
@@ -96,24 +96,25 @@ terraform apply
 terraform output
 ```
 
-Note down these outputs:
-- `cloudfront_domain_name` — this is your app URL
-- `cloudfront_distribution_id` — needed for cache invalidation
-- `ecr_repository_url` — where the Docker image goes
+The remaining steps pull these values automatically via `terraform output`.
 
 ---
 
 ## Step 5: Build and push the backend Docker image
 
+> **Note:** On Linux, docker commands may require `sudo` (e.g., `sudo docker build ...`). On macOS with Docker Desktop, `sudo` is not needed. If you use `sudo` for one docker command, you must use it for ALL docker commands (login, build, tag, push) — otherwise auth credentials won't be shared between `sudo` and non-`sudo` Docker.
+
 ```bash
-cd ..  # back to project root
+cd ..  # back to project root (must be in 454-project/, NOT terraform/)
 
 # Login to ECR (credentials expire after 12 hours)
 aws ecr get-login-password --region us-east-1 | \
   docker login --username AWS --password-stdin \
   $(cd terraform && terraform output -raw ecr_repository_url | cut -d'/' -f1)
 
-# Build for linux/amd64 - CRITICAL if you're on Apple Silicon
+# Build the Docker image
+# --platform linux/amd64 is CRITICAL on Apple Silicon Macs (M1/M2/M3)
+# On x86 Linux (e.g., Fedora, Ubuntu) you can omit the --platform flag
 docker build --platform linux/amd64 -t soundcloud-discuss-backend ./backend
 
 # Tag for ECR
@@ -214,11 +215,14 @@ Open `https://<cloudfront_domain>` in a browser and verify:
 ## Step 10: Verify security hardening
 
 ```bash
-# Check WAF is blocking SQL injection (should return 403)
-curl -I "https://<your_alb_dns>/api/tracks?sort=1%20OR%201=1"
+# Get the ALB DNS name (WAF SQL injection rules are on the ALB, not CloudFront)
+ALB_DNS=$(cd terraform && terraform output -raw alb_dns_name)
 
-# Check GuardDuty is running
-aws guardduty list-detectors --region us-east-1
+# Check WAF is blocking SQL injection (should return 403)
+curl -I "http://$ALB_DNS/api/tracks?sort=1%20OR%201=1"
+
+# GuardDuty is disabled (requires paid AWS subscription, not available on free-tier)
+# The Terraform code is preserved in guardduty.tf for reference
 
 # Check Lambda functions deployed
 aws lambda list-functions --region us-east-1 \
@@ -281,7 +285,7 @@ Create a new invalidation: `aws cloudfront create-invalidation --distribution-id
 | Secrets Manager | 4 | DB creds + JWT secret |
 | CloudTrail + CloudWatch | 7 | Audit logging |
 | WAF (CloudFront + ALB) | 4 | SQL injection + XSS protection |
-| GuardDuty | 1 | Threat detection |
+| GuardDuty (disabled — free-tier) | 0 | Threat detection (code in repo, requires paid subscription) |
 | Lambda (audit + alerts) | 4 | Security event processing |
 
 **Total: ~60 resources**
