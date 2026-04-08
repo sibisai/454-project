@@ -4,13 +4,14 @@
 # It analyzes VPC Flow Logs, CloudTrail events, and DNS logs to detect threats
 # such as compromised instances, reconnaissance, and data exfiltration.
 
-resource "aws_guardduty_detector" "main" {
-  enable                       = true
-  finding_publishing_frequency = "FIFTEEN_MINUTES"
-
-  tags = {
-    Name        = "${var.project_name}-guardduty"
-    Project     = var.project_name
-    Environment = var.environment
-  }
-}
+# Disabled — requires a paid AWS subscription (not available on free-tier accounts)
+# resource "aws_guardduty_detector" "main" {
+#   enable                       = true
+#   finding_publishing_frequency = "FIFTEEN_MINUTES"
+#
+#   tags = {
+#     Name        = "${var.project_name}-guardduty"
+#     Project     = var.project_name
+#     Environment = var.environment
+#   }
+# }

@@ -151,12 +151,7 @@ output "alb_waf_acl_arn" {
   value       = aws_wafv2_web_acl.alb.arn
 }
 
-#--- GuardDuty ---
-
-output "guardduty_detector_id" {
-  description = "ID of the GuardDuty threat detection detector"
-  value       = aws_guardduty_detector.main.id
-}
+#--- GuardDuty (disabled — requires paid subscription) ---
 
 #--- Lambda ---
 

@@ -50,8 +50,8 @@ resource "aws_db_instance" "main" {
   vpc_security_group_ids = [aws_security_group.rds.id]
   db_subnet_group_name   = aws_db_subnet_group.main.name
 
-  # Backup and lifecycle — 7-day retention for point-in-time recovery
-  backup_retention_period = 7
+  # Backup and lifecycle — free tier allows max 1-day retention
+  backup_retention_period = 1
   skip_final_snapshot     = true  # Dev environment only
   deletion_protection     = false # Dev environment only
   apply_immediately       = true
