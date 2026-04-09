@@ -48,11 +48,19 @@ export default function SoundCloudEmbed({ embedHtml, artworkUrl, onMetadataLoade
         widget.bind(window.SC.Widget.Events.READY, () => {
           widget.getCurrentSound((sound) => {
             if (!sound) return;
-            onMetadataRef.current?.({
+            const meta = {
               title: sound.title,
               artist_name: sound.user?.username,
               artwork_url: sound.artwork_url,
-            });
+            };
+            onMetadataRef.current?.(meta);
+            window.dispatchEvent(new CustomEvent('soundboard:track-meta', {
+              detail: {
+                title:   meta.title,
+                artist:  meta.artist_name,
+                artwork: meta.artwork_url,
+              },
+            }));
           });
         });
       })

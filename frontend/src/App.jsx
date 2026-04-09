@@ -2,6 +2,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import { HiMusicalNote } from 'react-icons/hi2';
 import { AuthProvider } from './hooks/useAuth';
 import Navbar from './components/Navbar';
+// import MiniRadio from './components/MiniRadio';
 import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -32,7 +33,8 @@ export default function App() {
   return (
     <AuthProvider>
       <Navbar />
-      <main style={{ paddingTop: '60px' }}>
+      {/* <MiniRadio /> */}
+      <main style={{ paddingTop: '48px' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
