@@ -2,6 +2,53 @@
 
 A secure, cloud-deployed web application for sharing and discussing SoundCloud tracks. Built with a focus on AWS cloud security — role-based access control, encryption, network segmentation, and compliance with NIST SP 800-53.
 
+## Features
+
+### Core
+
+- Threaded discussions on SoundCloud tracks with nested replies
+- Post voting (upvote/downvote) and pinning (up to 3 per track)
+- Track likes and soft-deletion of posts
+- Track submission with SoundCloud oEmbed integration (3-layer fallback: oEmbed → OpenGraph → URL parsing)
+
+### Access Control & Moderation
+
+- 5-tier role-based access control: Guest, User, Artist, Moderator, Admin
+- Per-track moderator delegation (artists can appoint moderators for their own tracks)
+- Banned-user middleware blocking access across all authenticated routes
+- Audit logging of all moderation actions (bans, role changes, removals, pins, delegations) to database; application logs shipped to CloudWatch via ECS
+
+### Discovery & Search
+
+- Discover page: trending, recently active, new arrivals, personalized recommendations
+- User search by display name
+- Track search with sort by popularity or recency
+
+### User Experience
+
+- Public user profiles with track/post counts and activity
+- Personal dashboard: own tracks, moderated tracks, recent activity
+- Responsive design across all pages
+
+### Admin Panel
+
+- User management with role assignment and ban/unban
+- Audit log viewer
+- Analytics charts and top tracks leaderboard
+
+### Security
+
+- JWT access/refresh token flow with rotation
+- Rate limiting on auth endpoints (5 attempts / 60s on login)
+- OWASP security headers: HSTS, CSP, X-Content-Type-Options, XSS protection, restricted permissions policy
+- CORS hardening
+
+### Infrastructure
+
+- AWS deployment via Terraform: ECS Fargate, RDS Postgres, WAF, CloudTrail, GuardDuty
+- Lambda functions for audit processing and security alerts
+- CloudFront with security headers
+
 ## Tech Stack
 
 - **Frontend:** React 18, Vite, React Router, Axios
