@@ -128,7 +128,7 @@
   border: none;
   color: var(--color-text);
   padding: 3px var(--space-2);
-  min-width: 36px; min-height: 30px;
+  min-width: 36px; min-height: 36px;
   box-shadow: var(--bevel-raised);
   border-radius: var(--radius-sm);
   font-size: var(--font-lg);
