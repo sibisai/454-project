@@ -1,95 +1,45 @@
-/* ── Error Boundary ────────────────────────────────────────────────── */
-
 .error-boundary {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100dvh - 60px);
-  gap: var(--space-4);
-  padding: var(--space-4);
-  text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: calc(100dvh - 48px);
+  gap: var(--space-4); padding: var(--space-4); text-align: center;
 }
-
-.error-boundary-icon {
-  color: var(--color-danger);
-  opacity: 0.6;
-}
-
+.error-boundary-icon { color: #FFD700; filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.3)); }
 .error-boundary h1 {
-  font-size: var(--font-2xl);
-  font-weight: 700;
+  font-family: var(--font-ui); font-size: var(--font-2xl); font-weight: 900;
+  text-transform: uppercase; color: #FFFFFF;
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
 }
-
-.error-boundary p {
-  font-size: var(--font-sm);
-  color: var(--color-text-muted);
-  max-width: 420px;
-}
-
+.error-boundary p { font-size: var(--font-base); font-weight: 600; color: rgba(255,255,255,0.75); max-width: 420px; }
 .error-boundary details {
-  max-width: 480px;
-  width: 100%;
-  text-align: left;
+  max-width: 480px; width: 100%; text-align: left;
+  background: var(--color-surface); box-shadow: var(--bevel-window);
+  padding: var(--space-3); border-radius: var(--radius-sm);
 }
-
 .error-boundary summary {
-  font-size: var(--font-xs);
-  color: var(--color-text-muted);
-  cursor: pointer;
-  user-select: none;
+  font-size: var(--font-sm); font-weight: 800; color: var(--color-text-muted);
+  cursor: pointer; user-select: none; text-transform: uppercase;
 }
-
 .error-boundary pre {
-  margin-top: var(--space-2);
-  padding: var(--space-3);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-family: var(--font-mono);
-  font-size: var(--font-xs);
-  color: var(--color-danger);
-  overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  margin-top: var(--space-2); padding: var(--space-3);
+  background: #2A0A14; font-family: var(--font-mono);
+  font-size: var(--font-xs); color: var(--color-danger);
+  overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  box-shadow: var(--bevel-sunken); border-radius: var(--radius-sm);
 }
-
-.error-boundary .btn-accent {
-  margin-top: var(--space-2);
-}
-
-/* ── Inline Error ─────────────────────────────────────────────────── */
+.error-boundary .btn-accent { margin-top: var(--space-2); }
 
 .inline-error {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: var(--radius-md);
-  font-size: var(--font-sm);
-  color: var(--color-danger);
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: #2A0A14; box-shadow: var(--bevel-raised);
+  font-size: var(--font-sm); font-weight: 700;
+  color: var(--color-danger); text-transform: uppercase;
+  border-radius: var(--radius-sm);
 }
-
-.inline-error-icon {
-  flex-shrink: 0;
-}
-
-.inline-error-message {
-  flex: 1;
-}
-
+.inline-error-icon   { flex-shrink: 0; }
+.inline-error-message { flex: 1; }
 .inline-error .btn-ghost {
-  min-height: 32px;
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--font-xs);
-  color: var(--color-danger);
-  border-color: rgba(239, 68, 68, 0.3);
-  flex-shrink: 0;
+  min-height: 28px; padding: 2px var(--space-3);
+  font-size: var(--font-xs); color: var(--color-danger); flex-shrink: 0;
 }
-
-.inline-error .btn-ghost:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: var(--color-danger);
-}
+.inline-error .btn-ghost:hover:not(:disabled) { background: #3A0A18; }

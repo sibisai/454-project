@@ -115,6 +115,10 @@ export default function Register() {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <div className="auth-card-header">
+          <span className="auth-card-header-label">🔐 SoundBoard — Register</span>
+          <div className="auth-card-header-btns"><span>▽</span><span>□</span><span>×</span></div>
+        </div>
         <h1 className="auth-title">Create account</h1>
         <p className="auth-subtitle">Join SoundBoard and start discussing tracks</p>
 

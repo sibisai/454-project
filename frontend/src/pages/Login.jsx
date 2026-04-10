@@ -47,6 +47,10 @@ export default function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        <div className="auth-card-header">
+          <span className="auth-card-header-label">🔐 SoundBoard — Login</span>
+          <div className="auth-card-header-btns"><span>▽</span><span>□</span><span>×</span></div>
+        </div>
         <h1 className="auth-title">Welcome back</h1>
         <p className="auth-subtitle">Sign in to your SoundBoard account</p>
 

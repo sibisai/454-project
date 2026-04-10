@@ -32,7 +32,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Navbar />
-      <main style={{ paddingTop: '60px' }}>
+      <main style={{ paddingTop: '48px' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

@@ -1,87 +1,32 @@
-/* ── Share Button ──────────────────────────────────────────────────── */
-
-.share-btn-wrapper {
-  position: relative;
-  display: inline-flex;
-}
-
+.share-btn-wrapper { position: relative; display: inline-flex; }
 .share-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-  font-size: var(--font-sm);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
-  min-height: 44px;
-  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--color-surface); border: none;
+  color: var(--color-text); font-family: var(--font-ui);
+  font-size: var(--font-sm); font-weight: 800;
+  padding: 6px var(--space-3); box-shadow: var(--bevel-raised);
+  min-height: 36px; cursor: pointer; text-transform: uppercase;
+  border-radius: var(--radius-sm); transition: all var(--transition-fast);
 }
-
-.share-btn:hover {
-  color: var(--color-text);
-  border-color: var(--color-text-muted);
-  background: var(--color-surface-hover);
-}
-
-.share-btn--icon {
-  border: none;
-  padding: var(--space-2);
-  min-width: 44px;
-  min-height: 44px;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-}
-
-.share-btn--icon:hover {
-  border-color: transparent;
-}
-
-/* ── Toast ─────────────────────────────────────────────────────────── */
+.share-btn:hover  { background: var(--color-surface-hover); }
+.share-btn:active { box-shadow: var(--bevel-sunken); }
+.share-btn--icon  { padding: 6px var(--space-2); min-width: 36px; min-height: 36px; justify-content: center; }
 
 .share-toast {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
+  position: absolute; bottom: calc(100% + 6px); left: 50%;
   transform: translateX(-50%);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--font-xs);
-  color: var(--color-primary);
-  white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-  z-index: 50;
-  opacity: 0;
-  animation: share-toast-in 200ms ease-out forwards;
+  background: #0A2A14; box-shadow: var(--bevel-raised);
+  padding: 4px var(--space-3);
+  font-family: var(--font-ui); font-size: var(--font-xs); font-weight: 800;
+  color: #00E87A; white-space: nowrap;
+  pointer-events: none; z-index: 50; opacity: 0;
+  text-transform: uppercase; border-radius: var(--radius-sm);
+  animation: share-toast-in 150ms ease-out forwards;
 }
-
-.share-toast--out {
-  animation: share-toast-out 200ms ease-in forwards;
-}
-
-@keyframes share-toast-in {
-  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
-
-@keyframes share-toast-out {
-  from { opacity: 1; transform: translateX(-50%) translateY(0); }
-  to { opacity: 0; transform: translateX(-50%) translateY(4px); }
-}
-
+.share-toast--out { animation: share-toast-out 150ms ease-in forwards; }
+@keyframes share-toast-in  { from { opacity: 0; transform: translateX(-50%) translateY(4px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes share-toast-out { from { opacity: 1; } to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
-  .share-toast {
-    animation: none;
-    opacity: 1;
-  }
-
-  .share-toast--out {
-    animation: none;
-    opacity: 0;
-  }
+  .share-toast { animation: none; opacity: 1; }
+  .share-toast--out { animation: none; opacity: 0; }
 }
