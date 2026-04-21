@@ -65,9 +65,9 @@ All project docs are in the `docs/` folder:
 
 - **REQUIREMENTS.md** — Full functional, non-functional, and security requirements
 - **TASKS.md** — Task list broken into phases with assignments per team member
-- **design-document.md** — Design document (placeholder)
-- **compliance-checklist.md** — NIST SP 800-53 control mapping (placeholder)
-- **security-assessment.md** — Threat analysis and mitigations (placeholder)
+- **design-document.md** — System architecture, data model, API design, security architecture
+- **compliance-checklist.md** — NIST SP 800-53 control mapping (16 controls implemented)
+- **security-assessment.md** — Threat model with 5 threats and mitigations
 - **DEPLOYMENT.md** — Step-by-step AWS deployment guide (fresh clone to running app)
 
 ## Local Development Setup
@@ -87,6 +87,16 @@ All project docs are in the `docs/` folder:
 
 To stop: `docker compose down`
 
+### Demo Data
+
+To populate the database with demo users, tracks, and posts:
+
+```bash
+docker compose exec backend python seed_data.py
+```
+
+This creates sample users (including an admin), tracks, and threaded discussions for testing.
+
 ## AWS Deployment
 
 For full step-by-step instructions to deploy from a fresh clone to a running app on AWS, see **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)**.
@@ -100,7 +110,7 @@ All AWS resources are defined in Terraform under `terraform/`. Key components:
 - **Database:** RDS PostgreSQL 15 in private subnets, encrypted at rest
 - **Frontend Hosting:** S3 + CloudFront with Origin Access Identity
 - **Security:** WAF on both CloudFront and ALB (OWASP rules, SQLi protection, rate limiting), IAM least-privilege roles
-- **Logging & Monitoring:** CloudTrail (multi-region), CloudWatch Logs (90-day retention), GuardDuty threat detection
+- **Logging & Monitoring:** CloudTrail (multi-region), CloudWatch Logs (90-day retention), GuardDuty threat detection (disabled on free tier)
 - **Serverless:** Lambda functions for audit processing and security alerts
 - **Secrets:** AWS Secrets Manager for DB credentials and JWT secret
 

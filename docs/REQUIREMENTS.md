@@ -66,6 +66,21 @@ A cloud-hosted web application that lets users post SoundCloud tracks and have s
 - Homepage shows recently posted tracks
 - Users can search tracks by title or artist name
 
+### FR-7: Discovery & Recommendations
+
+- Discover page with curated track sections:
+  - **Trending:** Tracks with most recent activity (posts, votes, likes)
+  - **Recently Active:** Tracks with recent discussions
+  - **New Arrivals:** Most recently posted tracks
+  - **Personalized:** Collaborative filtering recommendations based on user activity
+- Users can search for other users by display name
+
+### FR-8: Engagement Features
+
+- Users can like/unlike tracks
+- Users can upvote/downvote posts
+- Track and post engagement metrics displayed in UI
+
 ---
 
 ## Non-Functional Requirements
@@ -184,6 +199,31 @@ A cloud-hosted web application that lets users post SoundCloud tracks and have s
 
 - `DELETE /api/mod/posts/:id` — Remove post (mod/admin)
 
+### Track Engagement
+
+- `POST /api/tracks/:id/like` — Like a track (auth required)
+- `DELETE /api/tracks/:id/like` — Unlike a track (auth required)
+
+### Post Engagement
+
+- `POST /api/posts/:id/vote` — Vote on a post (upvote/downvote, auth required)
+- `DELETE /api/posts/:id/vote` — Remove vote (auth required)
+
+### Discovery
+
+- `GET /api/discover/trending` — Trending tracks
+- `GET /api/discover/recently-active` — Recently active discussions
+- `GET /api/discover/new-arrivals` — Newest tracks
+- `GET /api/discover/recommendations` — Personalized recommendations (auth required)
+
+### User Profiles
+
+- `GET /api/users/search?q=` — Search users by display name
+- `GET /api/users/:id` — Get user public profile
+- `GET /api/users/:id/tracks` — Get tracks posted by user
+- `GET /api/users/:id/posts` — Get posts by user
+- `GET /api/users/me/dashboard` — Current user's dashboard (auth required)
+
 ### Admin
 
 - `GET /api/admin/users` — List all users
@@ -191,6 +231,9 @@ A cloud-hosted web application that lets users post SoundCloud tracks and have s
 - `POST /api/admin/users/:id/ban` — Ban user
 - `DELETE /api/admin/users/:id/ban` — Unban user
 - `GET /api/admin/audit-log` — View audit log (filterable)
+- `GET /api/admin/stats` — Platform statistics
+- `GET /api/admin/analytics` — User activity analytics
+- `GET /api/admin/top-tracks` — Most engaged tracks
 
 ---
 
@@ -257,6 +300,25 @@ A cloud-hosted web application that lets users post SoundCloud tracks and have s
 | target_id   | UUID        | ID of affected resource                                              |
 | details     | JSONB       | Additional context                                                   |
 | created_at  | TIMESTAMP   | Immutable                                                            |
+
+### track_likes
+
+| Column      | Type                | Notes          |
+| ----------- | ------------------- | -------------- |
+| track_id    | UUID                | FK → tracks.id |
+| user_id     | UUID                | FK → users.id  |
+| created_at  | TIMESTAMP           |                |
+| PRIMARY KEY | (track_id, user_id) |                |
+
+### post_votes
+
+| Column      | Type               | Notes                    |
+| ----------- | ------------------ | ------------------------ |
+| post_id     | UUID               | FK → posts.id            |
+| user_id     | UUID               | FK → users.id            |
+| vote_type   | ENUM               | 'upvote', 'downvote'     |
+| created_at  | TIMESTAMP          |                          |
+| PRIMARY KEY | (post_id, user_id) |                          |
 
 ---
 
