@@ -223,6 +223,7 @@ curl -I "http://$ALB_DNS/api/tracks?sort=1%20OR%201=1"
 
 # GuardDuty is disabled (requires paid AWS subscription, not available on free-tier)
 # The Terraform code is preserved in guardduty.tf for reference
+# See "Enabling GuardDuty" section below for instructions on enabling it
 
 # Check Lambda functions deployed
 aws lambda list-functions --region us-east-1 \
@@ -268,6 +269,52 @@ Security group descriptions had non-ASCII characters (em dashes). Already fixed 
 **CloudFront shows old version**
 
 Create a new invalidation: `aws cloudfront create-invalidation --distribution-id <ID> --paths "/*"`
+
+---
+
+## Enabling GuardDuty (Optional)
+
+GuardDuty is AWS's threat detection service that monitors for malicious activity by analyzing VPC Flow Logs, CloudTrail events, and DNS logs. It's disabled by default because it requires a paid AWS subscription.
+
+**When to enable:**
+- Production deployments
+- Paid AWS accounts (not free-tier)
+- When compliance requires continuous threat monitoring (NIST SI-3, SI-4)
+
+**Pricing (approximate):**
+- 30-day free trial for new AWS accounts
+- After trial: ~$4/GB for VPC Flow Logs analysis, ~$1/million CloudTrail events
+- Typical small application: $10-50/month
+
+**To enable:**
+
+1. Edit `terraform/guardduty.tf` and uncomment the resource block:
+   ```hcl
+   resource "aws_guardduty_detector" "main" {
+     enable                       = true
+     finding_publishing_frequency = "FIFTEEN_MINUTES"
+
+     tags = {
+       Name        = "${var.project_name}-guardduty"
+       Project     = var.project_name
+       Environment = var.environment
+     }
+   }
+   ```
+
+2. Apply the change:
+   ```bash
+   cd terraform
+   terraform plan -out=tfplan
+   terraform apply tfplan
+   ```
+
+3. Verify GuardDuty is active:
+   ```bash
+   aws guardduty list-detectors --region us-east-1
+   ```
+
+**To disable again:** Comment out the resource block and run `terraform apply`.
 
 ---
 

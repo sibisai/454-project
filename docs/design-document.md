@@ -163,7 +163,7 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step deployment instructions.
 | Single RDS Instance | No read replicas or automatic failover |
 | In-Memory Rate Limiter | Resets on container restart, not shared across ECS tasks (WAF provides reliable layer) |
 | SoundCloud Dependency | Only supports SoundCloud URLs; latency depends on external oEmbed API |
-| GuardDuty Unavailable | Requires paid subscription, disabled on free tier |
+| GuardDuty Unavailable | Requires paid subscription, disabled on free tier (see `terraform/guardduty.tf` to enable) |
 | No CI/CD Pipeline | Manual deployments via runbook |
 
 ### Future Enhancements
