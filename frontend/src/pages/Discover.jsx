@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
 import { formatRelativeTime } from '../utils/time';
@@ -45,24 +45,13 @@ function ScrollCard({ track, timeLabel }) {
 
 export default function Discover() {
   const { isAuthenticated } = useAuth();
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError('');
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['discover'],
+    queryFn: () => api.get('/discover').then(r => r.data),
+  });
 
-    api.get('/discover')
-      .then(({ data: d }) => { if (!cancelled) setData(d); })
-      .catch(() => { if (!cancelled) setError('Failed to load discover page.'); })
-      .finally(() => { if (!cancelled) setLoading(false); });
-
-    return () => { cancelled = true; };
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="disc-container">
         <Skeleton width="40%" height={32} />
@@ -85,7 +74,7 @@ export default function Discover() {
   if (error) {
     return (
       <div className="error-page">
-        <p className="error-message">{error}</p>
+        <p className="error-message">Failed to load discover page.</p>
         <Link to="/" className="error-link">Back to Home</Link>
       </div>
     );

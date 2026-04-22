@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { HiMagnifyingGlass, HiMusicalNote } from 'react-icons/hi2';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
@@ -12,7 +13,7 @@ const PER_PAGE = 12;
 function SkeletonCard() {
   return (
     <div className="skeleton-card">
-      <Skeleton variant="rect" height="var(--sc-player-height)" width="100%" />
+      <Skeleton variant="rect" style={{ aspectRatio: '1' }} width="100%" />
       <div className="skeleton-meta">
         <Skeleton width="50%" />
         <Skeleton width="75%" />
@@ -23,13 +24,9 @@ function SkeletonCard() {
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
-  const [tracks, setTracks] = useState([]);
-  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [sort, setSort] = useState('popular');
 
   useEffect(() => {
@@ -40,49 +37,41 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setError('');
+  const queryClient = useQueryClient();
+  const queryKey = ['tracks', page, debouncedSearch, sort];
 
-    const params = {
-      page,
-      per_page: PER_PAGE,
-      search: debouncedSearch || undefined,
-    };
-    if (!debouncedSearch) {
-      params.sort = sort;
-    }
+  const { data, isLoading, error } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const params = {
+        page,
+        per_page: PER_PAGE,
+        search: debouncedSearch || undefined,
+        sort: debouncedSearch ? undefined : sort,
+      };
+      const response = await api.get('/tracks', { params });
+      return response.data;
+    },
+    placeholderData: (previousData) => previousData,
+  });
 
-    api.get('/tracks', { params })
-      .then(({ data }) => {
-        if (cancelled) return;
-        setTracks(data.tracks);
-        setTotal(data.total);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setError('Failed to load tracks. Please try again.');
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+  const tracks = data?.tracks ?? [];
+  const total = data?.total ?? 0;
 
-    return () => { cancelled = true; };
-  }, [page, debouncedSearch, sort]);
+  const handleLike = useCallback(async (trackId, currentlyLiked) => {
+    const previousData = queryClient.getQueryData(queryKey);
 
-  async function handleLike(trackId, currentlyLiked) {
-    setTracks((prev) =>
-      prev.map((t) =>
-        t.id === trackId
-          ? {
-              ...t,
-              user_has_liked: !currentlyLiked,
-              like_count: t.like_count + (currentlyLiked ? -1 : 1),
-            }
-          : t
-      )
-    );
+    queryClient.setQueryData(queryKey, (old) => {
+      if (!old) return old;
+      return {
+        ...old,
+        tracks: old.tracks.map((t) =>
+          t.id === trackId
+            ? { ...t, user_has_liked: !currentlyLiked, like_count: t.like_count + (currentlyLiked ? -1 : 1) }
+            : t
+        ),
+      };
+    });
 
     try {
       if (currentlyLiked) {
@@ -91,19 +80,9 @@ export default function Home() {
         await api.post(`/tracks/${trackId}/like`);
       }
     } catch {
-      setTracks((prev) =>
-        prev.map((t) =>
-          t.id === trackId
-            ? {
-                ...t,
-                user_has_liked: currentlyLiked,
-                like_count: t.like_count + (currentlyLiked ? 1 : -1),
-              }
-            : t
-        )
-      );
+      queryClient.setQueryData(queryKey, previousData);
     }
-  }
+  }, [queryClient, queryKey]);
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
 
@@ -164,11 +143,11 @@ export default function Home() {
 
       {error && (
         <div className="error-banner home-error-banner" role="alert" aria-live="assertive">
-          {error}
+          Failed to load tracks. Please try again.
         </div>
       )}
 
-      {loading ? (
+      {isLoading && !data ? (
         <div className="track-list">
           {Array.from({ length: 4 }, (_, i) => <SkeletonCard key={i} />)}
         </div>

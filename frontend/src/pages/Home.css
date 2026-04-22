@@ -61,59 +61,124 @@
 .sort-tab.active { background: var(--color-surface-dark); box-shadow: var(--bevel-sunken); }
 
 /* ── Track list ── */
-.track-list { display: flex; flex-direction: column; gap: var(--space-5); }
+.track-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
 
-/* ── Track card — Win95 window ── */
-.track-card-wrapper {
-  position: relative;
+/* ── Track card — Retro neon style ── */
+.track-card {
+  display: flex;
+  flex-direction: column;
   background: var(--color-surface);
   box-shadow: var(--bevel-window);
   border-radius: var(--radius-lg);
-  overflow: visible;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+.track-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--bevel-window), 0 4px 20px rgba(0, 204, 255, 0.15);
 }
 
-/* Title bar via ::before */
-.track-card-wrapper::before {
-  content: '';
+/* Artwork */
+.track-card-artwork {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--color-surface-dark);
+  overflow: hidden;
+}
+.track-card-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s ease-out;
+}
+.track-card:hover .track-card-artwork img {
+  transform: scale(1.03);
+}
+.track-card-artwork-fallback {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: var(--title-bar-h);
-  background: var(--title-warm);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  pointer-events: none;
+  justify-content: center;
+  color: var(--color-text-light);
+  background: linear-gradient(135deg, var(--color-surface-dark) 0%, var(--color-surface) 100%);
 }
 
-/* Spacer so embed sits below title bar */
-.track-card-embed {
-  margin-top: var(--title-bar-h);
-  border-bottom: 2px solid var(--color-border-dark);
+/* Content */
+.track-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-2);
+  border-top: 2px solid var(--color-border-dark);
+}
+.track-card-info {
+  flex: 1;
+  min-width: 0;
+}
+.track-card-title {
+  font-family: var(--font-ui);
+  font-size: var(--font-base);
+  font-weight: 800;
+  color: var(--color-text);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.track-card-artist {
+  font-family: var(--font-ui);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 2px 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Meta row */
-.track-card-body {
+.track-card-meta {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
-
-.track-card-meta-link {
-  display: flex;
+.track-card-meta-item {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 4px;
   font-family: var(--font-ui);
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   font-weight: 700;
   color: var(--color-text-muted);
-  flex: 1; min-width: 0; flex-wrap: wrap;
-  text-decoration: none;
-  transition: color var(--transition-fast);
 }
-.track-card-meta-link:hover   { color: var(--color-text); }
-.track-card-meta-link:visited { color: var(--color-text-muted); }
+.track-card-poster {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.track-card-poster:hover {
+  color: var(--color-accent);
+}
+.track-card-time {
+  margin-left: auto;
+}
+
+/* Actions row */
+.track-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-3);
+}
 
 /* Like button */
 .track-card-like {
@@ -129,50 +194,29 @@
   font-weight: 800;
   box-shadow: var(--bevel-raised);
   flex-shrink: 0;
-  min-width: 44px; min-height: 30px;
+  min-width: 44px;
+  min-height: 30px;
   justify-content: center;
   border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
+  cursor: pointer;
+  transition: all 0.15s;
 }
-.track-card-like:not(.disabled):hover  { background: #2A0A1A; color: #FF66AA; }
-.track-card-like:not(.disabled):active { box-shadow: var(--bevel-sunken); }
-.track-card-like.liked { background: #2A0A1A; color: #FF66AA; box-shadow: var(--bevel-sunken); }
-.track-card-like.disabled { cursor: default; opacity: 0.6; }
-.track-card-like-count { font-size: var(--font-xs); }
-
-/* ── Track card title bar overlay (shows text/buttons) ── */
-.track-card-wrapper .track-titlebar-text {
-  position: absolute;
-  top: 0; left: var(--space-3); right: 80px;
-  height: var(--title-bar-h);
-  display: flex; align-items: center;
-  font-family: var(--font-ui);
-  font-size: var(--font-xs);
-  font-weight: 900;
-  color: #1A1A1A;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-  pointer-events: none;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+.track-card-like:not(.disabled):hover {
+  background: #2A0A1A;
+  color: #FF66AA;
 }
-
-.track-card-wrapper .track-titlebar-btns {
-  position: absolute;
-  top: 5px; right: var(--space-2);
-  display: flex; gap: 2px;
+.track-card-like:not(.disabled):active {
+  box-shadow: var(--bevel-sunken);
 }
-
-.track-card-wrapper .track-titlebar-btns span {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 18px; height: 18px;
-  background: var(--color-surface);
-  font-size: 9px; font-weight: 900;
-  box-shadow: var(--bevel-raised);
-  cursor: pointer; color: var(--color-text);
-  border-radius: 1px;
+.track-card-like.liked {
+  background: #2A0A1A;
+  color: #FF66AA;
+  box-shadow: var(--bevel-sunken);
 }
-.track-card-wrapper .track-titlebar-btns span:active { box-shadow: var(--bevel-sunken); }
+.track-card-like.disabled {
+  cursor: default;
+  opacity: 0.6;
+}
 
 /* ── Pagination ── */
 .pagination {
@@ -211,15 +255,6 @@
   box-shadow: var(--bevel-window);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  padding-top: var(--title-bar-h);
-  position: relative;
-}
-.skeleton-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: var(--title-bar-h);
-  background: var(--title-warm);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 .skeleton-meta {
   display: flex; flex-direction: column;
@@ -274,5 +309,4 @@
 /* ── 600px ── */
 @media (max-width: 600px) {
   .home-hero-title { font-size: 9px; }
-  .track-card-body { padding: var(--space-3); gap: var(--space-3); }
 }
