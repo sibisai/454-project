@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
+import { useAuth } from '../hooks/useAuth';
 import { formatRelativeTime } from '../utils/time';
 import Skeleton from '../components/Skeleton';
 import './Discover.css';
